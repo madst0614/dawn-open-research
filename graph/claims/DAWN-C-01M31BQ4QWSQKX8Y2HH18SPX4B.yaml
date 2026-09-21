@@ -1,0 +1,9 @@
+id: DAWN-C-01M31BQ4QWSQKX8Y2HH18SPX4B
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+title: Restricted visibility can suffice
+proposition: LM computation can remain effective with a substantially restricted conditional operator
+  subset.
+scope: DAWN-SRW model family; scale, visibility protocol and quality threshold to be specified.
+status: proposed

@@ -1,0 +1,29 @@
+id: DAWN-X-01M31BQ4QW5524B0M7CVVDVXV6
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+title: TPU sparse RW execution
+lifecycle: blocked
+graph_context:
+- DAWN-Q-01M31BQ4QWAW76FGWYYGP8X7HM
+targets:
+- DAWN-Q-01M31BQ4QWAW76FGWYYGP8X7HM
+goal: Implement and benchmark TPU-native sparse or local RW computation, including correctness, compilation
+  and communication costs.
+motivation: Owner-directed initial DAWN research frontier; no result is asserted.
+probe_ids: []
+requires:
+  capabilities:
+  - kernel.tpu_sparse_rw@1
+  - benchmark.step_time@1
+  artifacts: []
+profile_ids:
+- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+entrypoint: null
+expected_outputs: []
+completion_criteria: Specify Probe, obtain required capabilities and review observations.
+known_limitations:
+- No public research result is established by this manifest.
+blockers:
+- TPU-native sparse kernel, benchmark and correctness Probe are missing.
+declared_readiness: null

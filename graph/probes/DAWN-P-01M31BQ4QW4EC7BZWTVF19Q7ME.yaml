@@ -1,0 +1,9 @@
+id: DAWN-P-01M31BQ4QW4EC7BZWTVF19Q7ME
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+title: Train under restricted visibility
+method: training experiment
+protocol: Train matched runs with operator visibility at 100%, 50%, 25%, 10% and 5%, then evaluate each
+  under a fixed protocol.
+status: proposed

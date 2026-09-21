@@ -1,0 +1,94 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "contributors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contributors",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "pattern": "^[a-z]+:[A-Za-z0-9_.-]+$",
+      "title": "Created By",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "lock_digest": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lock Digest"
+    },
+    "lockfile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lockfile"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "python": {
+      "title": "Python",
+      "type": "string"
+    },
+    "runtime": {
+      "title": "Runtime",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "specification": {
+      "title": "Specification",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "experimental",
+        "available",
+        "validated",
+        "broken"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "created_at",
+    "name",
+    "python",
+    "specification",
+    "runtime",
+    "status"
+  ],
+  "title": "Environment",
+  "type": "object"
+}

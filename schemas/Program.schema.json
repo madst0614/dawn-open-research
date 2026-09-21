@@ -1,0 +1,76 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "citation_convention": {
+      "title": "Citation Convention",
+      "type": "string"
+    },
+    "default_baseline_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Baseline Id"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "id_scheme": {
+      "title": "Id Scheme",
+      "type": "string"
+    },
+    "mission": {
+      "title": "Mission",
+      "type": "string"
+    },
+    "namespace": {
+      "pattern": "^[A-Z][A-Z0-9]{1,15}$",
+      "title": "Namespace",
+      "type": "string"
+    },
+    "repository": {
+      "title": "Repository",
+      "type": "string"
+    },
+    "review_policy": {
+      "title": "Review Policy",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "views": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Views",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "namespace",
+    "schema_version",
+    "title",
+    "mission",
+    "repository",
+    "views",
+    "id_scheme",
+    "review_policy",
+    "citation_convention"
+  ],
+  "title": "Program",
+  "type": "object"
+}

@@ -1,0 +1,64 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "contributors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contributors",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "pattern": "^[a-z]+:[A-Za-z0-9_.-]+$",
+      "title": "Created By",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "question": {
+      "title": "Question",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "open",
+        "scoped",
+        "active",
+        "partially_resolved",
+        "resolved",
+        "blocked",
+        "superseded"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "created_at",
+    "title",
+    "question",
+    "status"
+  ],
+  "title": "Question",
+  "type": "object"
+}

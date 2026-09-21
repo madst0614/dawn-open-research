@@ -1,0 +1,27 @@
+id: DAWN-X-01M31BQ4QWY056GC1H58WEJRY6
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+title: Logical locality
+lifecycle: planned
+graph_context:
+- DAWN-Q-01M31BQ4QWRD6ZKXVRRJ6P0ANQ
+targets:
+- DAWN-Q-01M31BQ4QWRD6ZKXVRRJ6P0ANQ
+goal: Study whether conditional operator organization forms stable logical neighborhoods.
+motivation: Owner-directed initial DAWN research frontier; no result is asserted.
+probe_ids: []
+requires:
+  capabilities:
+  - analysis.logical_locality@1
+  artifacts: []
+profile_ids:
+- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+entrypoint: null
+expected_outputs: []
+completion_criteria: Specify Probe, obtain required capabilities and review observations.
+known_limitations:
+- No public research result is established by this manifest.
+blockers:
+- Claims, evidence and a concrete Probe are needed before execution.
+declared_readiness: null

@@ -1,0 +1,11 @@
+# v0 architecture
+
+Git stores one YAML file per persistent object. `program.yaml` provides the program namespace and review convention. `src/open_research/models.py` defines strict v1 shapes; JSON Schemas in `schemas/` are generated projections. `store.py` validates identity, fields, reference integrity, relation types and conservative epistemic rules. The CLI reads the tree and derives views. No database is authoritative.
+
+The six semantic graph nodes are Claim, Question, Insight, Probe, Evidence and Source. Relation files carry the edge assertion, class (`semantic` or `provenance`), author, rationale, status and optional review. These are vocabulary, not an imposed sequence. Stable identity, schema version, research state, Git revision, executed implementation revision and artifact digest are separate concepts.
+
+An Exploration names a goal, graph context, Probes, capabilities, artifacts and resource profiles. Its executable entrypoint names its Probe explicitly; reordering a Probe list does not change execution. Infrastructure providers advertise capabilities. The resolver compares compatible environments and providers deterministically, preferring validated then available then experimental providers. It checks the profile, environment lock and artifact availability, reports blockers, and exposes each selected repository commit. A provider's stable ID and interface version are separate from that commit. Runs freeze the chosen provider revisions and input digests.
+
+Current v0 execution delegates to `scripts/zero_shot_eval_jax.py` in the pinned DAWN-SRW repository. The implementation is not copied. A local checkpoint path is supplied at execution time, hashed, and represented in the Run manifest by artifact ID and digest. Local logs and bulky outputs are ignored by Git; review their content before publishing. The durable manifest and config snapshot are inspectable. A failed Run retains its manifest and logs locally. An Evidence object must be authored separately after review.
+
+The first Exploration remains blocked: no local committed Orbax checkpoint was found, and the legacy TPU requirements do not provide a complete environment lock. The schema and CLI are testable on CPU without pretending that a scientific experiment ran.

@@ -1,0 +1,10 @@
+id: DAWN-ENV-01M31BQ4QWQHZ61SBKMX5MA1RN
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+name: legacy TPU zero-shot environment
+python: not pinned in legacy requirements
+specification: DAWN-SRW requirements_tpu.txt and requirements_zero_shot_eval.txt at pinned revision
+lock_digest: null
+runtime: JAX/XLA + Orbax + lm-eval 0.4.2 on Cloud TPU
+status: experimental

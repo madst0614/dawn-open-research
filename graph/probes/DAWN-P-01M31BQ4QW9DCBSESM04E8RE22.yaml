@@ -1,0 +1,9 @@
+id: DAWN-P-01M31BQ4QW9DCBSESM04E8RE22
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+title: Frozen stock zero-shot evaluation
+method: evaluation
+protocol: Restore a concrete committed Orbax checkpoint, run the six stock lm-eval 0.4.2 tasks with limit
+  32 for smoke only; capture task metrics, protocol metadata and logs. Full comparable run omits limit.
+status: proposed

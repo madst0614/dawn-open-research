@@ -1,0 +1,13 @@
+id: DAWN-R-01M31BQ4QWXGBA3A2PFFA4M3QC
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+source_id: DAWN-S-01M31BQ4QWFGVD7Z2P679X2Y7X
+target_id: DAWN-Q-01M31BQ4QWZ8CDF6G0PGEXZ6Z2
+relation_class: semantic
+relation_type: contextualizes
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-21T06:51:00+00:00'
+rationale: The documented evaluator provides context for the language-behavior question; no intellectual
+  origin is asserted.

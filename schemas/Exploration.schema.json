@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "Requirements": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "capabilities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        }
+      },
+      "title": "Requirements",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blockers",
+      "type": "array"
+    },
+    "completion_criteria": {
+      "title": "Completion Criteria",
+      "type": "string"
+    },
+    "contributors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contributors",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "pattern": "^[a-z]+:[A-Za-z0-9_.-]+$",
+      "title": "Created By",
+      "type": "string"
+    },
+    "declared_readiness": {
+      "anyOf": [
+        {
+          "enum": [
+            "draft",
+            "local",
+            "public",
+            "blocked"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Declared Readiness"
+    },
+    "entrypoint": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entrypoint"
+    },
+    "entrypoint_probe_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entrypoint Probe Id"
+    },
+    "expected_outputs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Expected Outputs",
+      "type": "array"
+    },
+    "goal": {
+      "title": "Goal",
+      "type": "string"
+    },
+    "graph_context": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Graph Context",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "known_limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Limitations",
+      "type": "array"
+    },
+    "lifecycle": {
+      "enum": [
+        "draft",
+        "planned",
+        "active",
+        "completed",
+        "blocked",
+        "superseded"
+      ],
+      "title": "Lifecycle",
+      "type": "string"
+    },
+    "motivation": {
+      "title": "Motivation",
+      "type": "string"
+    },
+    "probe_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Probe Ids",
+      "type": "array"
+    },
+    "profile_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Profile Ids",
+      "type": "array"
+    },
+    "requires": {
+      "$ref": "#/$defs/Requirements"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "targets": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Targets",
+      "type": "array"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "created_at",
+    "title",
+    "lifecycle",
+    "goal",
+    "motivation",
+    "completion_criteria"
+  ],
+  "title": "Exploration",
+  "type": "object"
+}

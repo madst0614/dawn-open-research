@@ -1,0 +1,12 @@
+id: DAWN-R-01M31BQ4QWHK4JT3Z711T0GQXS
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+source_id: DAWN-Q-01M31BQ4QW8D5NDHR8NWBMVM1A
+target_id: DAWN-C-01M31BQ4QWSQKX8Y2HH18SPX4B
+relation_class: semantic
+relation_type: motivates
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-21T06:51:00+00:00'
+rationale: Restricted visibility is one proposed answer to the open visibility question.

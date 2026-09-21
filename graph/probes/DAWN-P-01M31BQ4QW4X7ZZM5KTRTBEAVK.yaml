@@ -1,0 +1,9 @@
+id: DAWN-P-01M31BQ4QW4X7ZZM5KTRTBEAVK
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+title: Post-hoc visibility restriction
+method: ablation
+protocol: Evaluate an already trained checkpoint with operator visibility at 100%, 50%, 25%, 10% and 5%,
+  holding the rest of the evaluation protocol fixed.
+status: proposed

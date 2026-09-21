@@ -1,0 +1,102 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Capabilities",
+      "type": "array"
+    },
+    "contributors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contributors",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "pattern": "^[a-z]+:[A-Za-z0-9_.-]+$",
+      "title": "Created By",
+      "type": "string"
+    },
+    "environment_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Environment Ids",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "interface_version": {
+      "title": "Interface Version",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "profile_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Profile Ids",
+      "type": "array"
+    },
+    "repository_id": {
+      "title": "Repository Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_path": {
+      "title": "Source Path",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "experimental",
+        "available",
+        "validated",
+        "deprecated",
+        "broken"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "verification_run_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Verification Run Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "created_at",
+    "name",
+    "interface_version",
+    "repository_id",
+    "source_path",
+    "capabilities",
+    "environment_ids",
+    "profile_ids",
+    "status"
+  ],
+  "title": "InfrastructureProvider",
+  "type": "object"
+}

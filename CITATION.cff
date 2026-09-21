@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: Please cite a frozen release of the DAWN Open Research Program when using this work.
+title: DAWN Open Research Program
+type: software
+authors:
+  - name: DAWN Open Research contributors
+repository-code: https://github.com/madst0614/dawn-open-research
+license: Apache-2.0

@@ -1,0 +1,319 @@
+{
+  "$defs": {
+    "FrozenArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Digest",
+          "type": "string"
+        },
+        "location": {
+          "title": "Location",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "digest",
+        "location"
+      ],
+      "title": "FrozenArtifact",
+      "type": "object"
+    },
+    "FrozenProvider": {
+      "additionalProperties": false,
+      "properties": {
+        "dirty": {
+          "title": "Dirty",
+          "type": "boolean"
+        },
+        "interface_version": {
+          "title": "Interface Version",
+          "type": "string"
+        },
+        "provider_id": {
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "repository_id": {
+          "title": "Repository Id",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider_id",
+        "interface_version",
+        "repository_id",
+        "revision",
+        "dirty"
+      ],
+      "title": "FrozenProvider",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "command": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Command",
+      "type": "array"
+    },
+    "config_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Config Digest",
+      "type": "string"
+    },
+    "config_path": {
+      "title": "Config Path",
+      "type": "string"
+    },
+    "contributors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contributors",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "pattern": "^[a-z]+:[A-Za-z0-9_.-]+$",
+      "title": "Created By",
+      "type": "string"
+    },
+    "dataset_provenance": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Dataset Provenance",
+      "type": "object"
+    },
+    "ended_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ended At"
+    },
+    "environment_id": {
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_lock_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Environment Lock Digest",
+      "type": "string"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "executor": {
+      "title": "Executor",
+      "type": "string"
+    },
+    "exploration_id": {
+      "title": "Exploration Id",
+      "type": "string"
+    },
+    "hardware_class": {
+      "title": "Hardware Class",
+      "type": "string"
+    },
+    "hardware_observation": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Hardware Observation",
+      "type": "object"
+    },
+    "hardware_verified": {
+      "default": false,
+      "title": "Hardware Verified",
+      "type": "boolean"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "implementations": {
+      "items": {
+        "$ref": "#/$defs/FrozenProvider"
+      },
+      "minItems": 1,
+      "title": "Implementations",
+      "type": "array"
+    },
+    "input_artifacts": {
+      "items": {
+        "$ref": "#/$defs/FrozenArtifact"
+      },
+      "title": "Input Artifacts",
+      "type": "array"
+    },
+    "invalidation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Invalidation"
+    },
+    "native_manifest_digest": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Native Manifest Digest"
+    },
+    "outputs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Outputs",
+      "type": "array"
+    },
+    "params_hash": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Params Hash"
+    },
+    "probe_id": {
+      "title": "Probe Id",
+      "type": "string"
+    },
+    "produced_artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Produced Artifact Ids",
+      "type": "array"
+    },
+    "profile_id": {
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "research_dirty": {
+      "title": "Research Dirty",
+      "type": "boolean"
+    },
+    "research_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Research Revision",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Seed"
+    },
+    "software_versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Software Versions",
+      "type": "object"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "created",
+        "running",
+        "completed",
+        "failed",
+        "cancelled",
+        "invalidated"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "created_at",
+    "exploration_id",
+    "probe_id",
+    "research_revision",
+    "research_dirty",
+    "implementations",
+    "environment_id",
+    "environment_lock_digest",
+    "profile_id",
+    "hardware_class",
+    "input_artifacts",
+    "config_digest",
+    "config_path",
+    "command",
+    "executor",
+    "started_at",
+    "status"
+  ],
+  "title": "Run",
+  "type": "object"
+}

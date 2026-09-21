@@ -1,0 +1,72 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "accelerator": {
+      "title": "Accelerator",
+      "type": "string"
+    },
+    "contributors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contributors",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "pattern": "^[a-z]+:[A-Za-z0-9_.-]+$",
+      "title": "Created By",
+      "type": "string"
+    },
+    "environment_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Environment Ids",
+      "type": "array"
+    },
+    "hardware_class": {
+      "title": "Hardware Class",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "experimental",
+        "available",
+        "validated"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "created_at",
+    "name",
+    "hardware_class",
+    "accelerator",
+    "environment_ids",
+    "status"
+  ],
+  "title": "ResourceProfile",
+  "type": "object"
+}

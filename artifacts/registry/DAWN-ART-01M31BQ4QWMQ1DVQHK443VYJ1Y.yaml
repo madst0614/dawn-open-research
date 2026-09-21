@@ -1,0 +1,18 @@
+id: DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+kind: checkpoint
+name: DAWN-SRW reference Orbax checkpoint for zero-shot evaluation
+semantic_version: null
+producer: null
+uri: null
+repository_id: DAWN-REPO-01M31BQ4QWX012YY5KN1ZJ7RR8
+revision: null
+digest: null
+media_type: application/x-orbax-checkpoint
+license: null
+availability: missing
+compatible_with:
+- model.dawn_srw@1
+validation_status: unknown

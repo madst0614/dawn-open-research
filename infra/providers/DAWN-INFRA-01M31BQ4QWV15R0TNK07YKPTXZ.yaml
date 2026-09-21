@@ -1,0 +1,17 @@
+id: DAWN-INFRA-01M31BQ4QWV15R0TNK07YKPTXZ
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-21T06:51:00+00:00'
+name: DAWN-SRW JAX TPU runtime
+interface_version: '1'
+repository_id: DAWN-REPO-01M31BQ4QWX012YY5KN1ZJ7RR8
+source_path: scripts/train_jax.py
+capabilities:
+- runtime.jax@1
+- runtime.tpu@1
+environment_ids:
+- DAWN-ENV-01M31BQ4QWQHZ61SBKMX5MA1RN
+profile_ids:
+- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+verification_run_ids: []
+status: experimental
