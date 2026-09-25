@@ -2,11 +2,33 @@
 
 DAWN is a Git-native research program studying whether AI computation can become explicit, traceable, causally testable, and eventually selectively executable with physical efficiency. This repository contains its public research graph, executable plans, infrastructure references, schemas, and run provenance. Git is the source of truth; websites, indexes, and generated status views are projections.
 
+## Start here
+
+```bash
+# See the program
+dawn status
+dawn explore
+
+# Understand one research thread
+dawn view <EXPLORATION_ID>
+
+# Go deeper into its canonical research context
+dawn view <EXPLORATION_ID> --mode research
+
+# See whether it can run and exactly what is missing
+dawn view <EXPLORATION_ID> --mode execution
+
+# Hand the current canonical state to ChatGPT or another researcher
+dawn export <EXPLORATION_ID> > research.dor.yaml
+```
+
+`dawn view` is a read-only projection: compact by default, research-focused with `--mode research`, and resolver-backed with `--mode execution`. Add `--profile <PROFILE>` to execution mode to inspect only one profile. `dawn export` writes one self-contained YAML snapshot to standard output; add `--json` for JSON. Neither command creates canonical research state.
+
 ## From an idea to reproducible research
 
 `idea/conversation → private DOR Packet → Codex ingest → Exploration → resolve → compute → Run/Evidence`
 
-A DOR Packet is a private, local handoff document. It carries enough context to continue a research conversation without the original chat, but it is not a canonical research object and is not accepted as a finding. Codex reads the packet, searches the existing graph, reuses overlapping objects, creates only genuinely distinct objects, prepares an Exploration, and reports what is runnable or blocked. The repository's existing Claim (C), Question (Q), Insight (I), Probe (P), Evidence (E), Source (S), Relation (R), Exploration, Run, and resolver semantics remain authoritative.
+A DOR Packet is a private, local handoff document. It carries enough context to continue a research conversation without the original chat, but it is not canonical state and is not accepted as a finding. Codex reads the packet, searches the existing graph, reuses overlapping objects, creates only genuinely distinct objects, prepares an Exploration, and reports what is runnable or blocked.
 
 ### 1. Browse what is known and open
 
@@ -36,7 +58,7 @@ Ask Codex:
 Read AGENTS.md and ingest .dor/inbox/operator-routing.dor.yaml.
 ```
 
-Ingest is an agent workflow, not a `dawn ingest` command. Codex follows [AGENTS.md](AGENTS.md): it treats packet statements as proposals, searches before creating objects, preserves explicit attribution, adds only reviewable proposed Relations, and never converts a proposed result into Evidence.
+Ingest is an agent workflow, not a `dawn ingest` command. Codex follows [AGENTS.md](AGENTS.md): it hashes and privately archives the unchanged packet, records a private intake trace, treats packet statements as proposals, searches before creating objects, preserves explicit attribution, adds only reviewable proposed Relations, and never converts a proposed result into Evidence.
 
 ### 4. Prepare and resolve an Exploration
 
@@ -65,6 +87,15 @@ See [the reproducibility model](docs/reproducibility/model.md) for the exact exe
 
 Keep every terminal Run and its provenance, including negative, failed, cancelled, or invalidated outcomes. After review, author Evidence with an explicit observation, scope, limitations, and Run or Source provenance. Graph updates and accepted Relations can then support, weaken, contradict, or refine the next round of research.
 
+## Four layers, one source of truth
+
+- **DOR Packet** — rich private input context under `.dor/inbox/`.
+- **Intake Trace** — private transformation provenance under `.dor/archive/` and `.dor/maps/`; it explains canonicalization but is never scientific Evidence.
+- **Canonical Graph** — the authoritative Git state: Claim (C), Question (Q), Insight (I), Probe (P), Evidence (E), Source (S), Relation (R), Exploration, infrastructure, Artifact, and Run objects.
+- **View / Export** — generated, purpose-specific projections built only from validated canonical state. They never read `.dor/` and never become a new source of truth.
+
+The working rule is: preserve information richly, canonicalize strictly, and present simply.
+
 ## Install the local CLI
 
 ```bash
@@ -88,7 +119,7 @@ The repository has no `uv.lock`; a future release can add one after the research
 
 ## CLI reference
 
-The implemented command surface is `dawn validate`, `dawn status`, `dawn show <ID>`, `dawn explore [QUERY]`, `dawn resolve`, `dawn run`, and `dawn id new <KIND>`. Run `dawn <COMMAND> --help` for command-specific arguments. Generate offline-safe stable IDs with `dawn id new Q` or the appropriate registered kind.
+The implemented command surface is `dawn validate`, `dawn status`, `dawn show <ID>`, `dawn explore [QUERY]`, `dawn view <ID>`, `dawn export <ID>`, `dawn resolve`, `dawn run`, and `dawn id new <KIND>`. Run `dawn <COMMAND> --help` for command-specific arguments. Generate offline-safe stable IDs with `dawn id new Q` or the appropriate registered kind.
 
 The four intended views are **Knowledge** (Claims, Questions, Insights, Evidence, and Sources), **Explore** (work that can be taken on), **Live** (Runs and review in progress), and **People** (attributed contributions). In v0, Git and the CLI provide these views. There is no web service or database.
 

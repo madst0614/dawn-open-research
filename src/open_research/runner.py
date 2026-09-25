@@ -13,6 +13,7 @@ import yaml
 from .ids import new_id
 from .models import Exploration, InfrastructureProvider, RepositoryRef, Run
 from .resolver import resolve
+from .revision import git_identity as _git_identity
 from .store import validate_catalog
 
 
@@ -31,15 +32,6 @@ def hash_path(path: Path) -> str:
             for chunk in iter(lambda: handle.read(1024 * 1024), b""):
                 digest.update(chunk)
     return "sha256:" + digest.hexdigest()
-
-
-def _git(repo: Path, *args: str) -> str:
-    completed = subprocess.run(["git", "-C", str(repo), *args], text=True, capture_output=True, check=True)
-    return completed.stdout.strip()
-
-
-def _git_identity(repo: Path) -> tuple[str, bool]:
-    return _git(repo, "rev-parse", "HEAD"), bool(_git(repo, "status", "--porcelain"))
 
 
 def _write_manifest(path: Path, run: Run) -> None:

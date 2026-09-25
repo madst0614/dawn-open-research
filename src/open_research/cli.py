@@ -13,6 +13,7 @@ from .models import Claim, Exploration, InfrastructureProvider, Question, Relati
 from .resolver import readiness, resolve
 from .runner import execute
 from .store import load_catalog, validate_catalog
+from .views import build_export, build_view
 
 
 def _root(start: Path) -> Path:
@@ -103,6 +104,14 @@ def build_parser():
     sub.add_argument("--profile", required=True)
     sub.add_argument("--artifact", action="append", default=[], metavar="ID=PATH")
     sub.add_argument("--json", action="store_true")
+    sub = commands.add_parser("view")
+    sub.add_argument("id")
+    sub.add_argument("--mode", choices=("compact", "research", "execution"), default="compact")
+    sub.add_argument("--profile")
+    sub.add_argument("--json", action="store_true")
+    sub = commands.add_parser("export")
+    sub.add_argument("id")
+    sub.add_argument("--json", action="store_true")
     sub = commands.add_parser("run")
     sub.add_argument("id")
     sub.add_argument("--profile", required=True)
@@ -146,6 +155,10 @@ def main(argv=None) -> int:
             _emit(_explore(catalog, args.query), args.json)
         elif args.command == "resolve":
             _emit(resolve(catalog, args.id, args.profile, _artifact_options(args.artifact)), args.json)
+        elif args.command == "view":
+            _emit(build_view(catalog, args.id, args.mode, args.profile), args.json)
+        elif args.command == "export":
+            _emit(build_export(catalog, args.id), args.json)
         elif args.command == "run":
             if args.limit <= 0:
                 raise ValueError("--limit must be positive")
