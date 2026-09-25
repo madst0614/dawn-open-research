@@ -189,11 +189,13 @@ def _research_unchecked(catalog, object_id: str, export_safe: bool = False) -> d
             relation_ids.add(relation.id)
             selected_ids.update((relation.source_id, relation.target_id))
 
+    provenance_source_ids = set()
     for selected_id in sorted(selected_ids):
         selected = catalog.get(selected_id)
         if isinstance(selected, Evidence):
             run_ids.update(selected.run_ids)
-            selected_ids.update(selected.source_ids)
+            provenance_source_ids.update(selected.source_ids)
+    selected_ids.update(provenance_source_ids)
 
     for run_id in sorted(run_ids):
         run = catalog.get(run_id, Run)
@@ -303,8 +305,6 @@ def _redact_paths(value):
 
 def _export_record(obj) -> dict:
     data = _record(obj)
-    if isinstance(obj, Evidence):
-        return data
     if isinstance(obj, Run):
         data["input_artifacts"] = [
             {"artifact_id": item.artifact_id, "digest": item.digest} for item in obj.input_artifacts

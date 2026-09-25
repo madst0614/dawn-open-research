@@ -91,7 +91,19 @@ def add_evidence_provenance(research_tree: Path):
     )
     write_yaml(run_dir / "manifest.yaml", run.model_dump(mode="json"))
 
-    source = sorted(catalog.of_type(Source), key=lambda item: item.id)[0]
+    source = Source(
+        id=new_id(catalog.program.namespace, "S"),
+        created_by="github:test",
+        created_at="2026-09-25T00:00:30Z",
+        title="Isolated fixture source",
+        source_type="other",
+        uri="https://example.invalid/isolated-fixture-source",
+        source_statement="Fixture source referenced only by Evidence provenance.",
+    )
+    source_dir = research_tree / "graph" / "sources"
+    source_dir.mkdir(exist_ok=True)
+    write_yaml(source_dir / f"{source.id}.yaml", source.model_dump(mode="json"))
+
     evidence_id = new_id(catalog.program.namespace, "E")
     evidence = Evidence(
         id=evidence_id,
@@ -100,7 +112,7 @@ def add_evidence_provenance(research_tree: Path):
         title="Fixture observation",
         observation="A fixture observation tied to exact provenance.",
         scope="Projection tests only.",
-        limitations="Synthetic fixture, not a research finding.",
+        limitations=str(local_artifact),
         run_ids=[run.id],
         source_ids=[source.id],
         authors=["github:test"],
@@ -185,12 +197,17 @@ def test_research_view_uses_bounded_explicit_graph_closure(research_tree):
 
 
 def test_evidence_run_and_source_provenance_are_exact(research_tree):
-    catalog, exploration, evidence, source, run, _ = add_evidence_provenance(research_tree)
+    catalog, exploration, evidence, source, run, local_artifact = add_evidence_provenance(research_tree)
     result = build_view(catalog, exploration.id, "research")
     evidence_rows = {item["id"]: item for item in result["research"]["evidence"]}
     source_rows = {item["id"]: item for item in result["research"]["sources"]}
     run_rows = {item["id"]: item for item in result["runs"]}
+    assert not any(
+        source.id in {relation.source_id, relation.target_id}
+        for relation in catalog.of_type(Relation)
+    )
     assert evidence_rows[evidence.id] == catalog.get(evidence.id).model_dump(mode="json")
+    assert evidence_rows[evidence.id]["limitations"] == str(local_artifact)
     assert source_rows[source.id] == catalog.get(source.id).model_dump(mode="json")
     assert run_rows[run.id] == catalog.get(run.id).model_dump(mode="json")
 
@@ -228,7 +245,7 @@ def test_execution_view_is_resolver_output_and_profile_filter(research_tree):
 
 
 def test_export_is_deterministic_private_safe_and_read_only(research_tree, monkeypatch, capsys):
-    catalog, exploration, _, _, _, local_artifact = add_evidence_provenance(research_tree)
+    catalog, exploration, evidence, _, _, local_artifact = add_evidence_provenance(research_tree)
     private = research_tree / ".dor" / "maps" / "private.intake.yaml"
     private.parent.mkdir(parents=True)
     private.write_text("secret: SUPER_PRIVATE_PACKET_MARKER\n", encoding="utf-8")
@@ -246,6 +263,8 @@ def test_export_is_deterministic_private_safe_and_read_only(research_tree, monke
     assert "SUPER_PRIVATE_PACKET_MARKER" not in rendered
     assert ".dor" not in rendered
     assert str(local_artifact) not in rendered
+    exported_evidence = {item["id"]: item for item in first["research"]["evidence"]}
+    assert exported_evidence[evidence.id]["limitations"] == "[local path omitted]"
     assert all("location" not in item for run in first["runs"] for item in run["input_artifacts"])
 
     build_view(catalog, exploration.id)
