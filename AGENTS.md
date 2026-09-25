@@ -18,6 +18,22 @@ Never commit secrets, credentials, private URLs, machine paths, local caches, la
 
 When asked to add research in prose: search existing objects, identify overlap, reuse or create distinct objects, add proposed relations with rationales, never fabricate historical provenance, then validate. Generated state summaries are views, not canonical knowledge.
 
+## DOR Packet intake
+
+A DOR Packet is a private, noncanonical handoff, not a graph object, Source, Evidence, schema, or executable manifest. The default location is `.dor/inbox/*.dor.yaml`, and `.dor/` must remain ignored. Never force-add a packet, copy its private path into canonical objects, or treat Git ignore as encryption. Do not add packet-specific Python models, schemas, or CLI commands.
+
+When asked to ingest a packet:
+
+1. Read the complete packet and this file. Treat every packet statement as context or a proposal. Citations and existing canonical IDs are leads to verify against the repository or original Source, not automatic validation. The original conversation is unavailable by design; report a missing identity, indispensable context, or attribution as a blocker instead of inventing it.
+2. Inspect the current Git state and search the graph before editing. Check candidate concepts against existing Questions, Claims, Insights, Probes, Evidence, Sources, Relations, and Explorations. Reuse an overlapping object and relate it where appropriate; create a new offline ID only for a genuinely distinct canonical object.
+3. Preserve the graph vocabulary. A question is not automatically a Claim, a suggested experiment is not a Probe until its protocol is specified, a prediction or user report is not Evidence, and a conversation is not a Source. New Claims begin conservatively as proposed unless the existing reviewed graph justifies another status. New Relations remain proposed until reviewed.
+4. Preserve attribution and provenance boundaries. Use only creator identities and origins explicitly supplied by the packet or repository context. Similarity, chronology, packet authorship, and model synthesis do not establish `derived_from`, `inspired_by`, or other intellectual provenance. Never fabricate a citation, result, object ID, Run, review, or readiness claim.
+5. Canonicalize only the useful research content. Record explicit scope and uncertainty, retain negative or failed expectations, and separate packet suggestions from repository-established facts. Do not include secrets, credentials, private URLs, personal machine paths, raw private conversation, or unreviewed execution logs in tracked files.
+6. Create or update an Exploration only after graph overlap is resolved. Connect its `graph_context` and `targets` to existing or newly justified objects; include concrete goals, motivation, Probe IDs, capability and artifact requirements, compatible profiles, expected outputs, completion criteria, known limitations, and honest blockers. A Question parent is optional.
+7. Resolve against existing infrastructure. Prefer compatible validated providers and pinned revisions already registered in the repository. Use `dawn resolve <EXPLORATION_ID> --profile <PROFILE> --json` when the Exploration has an executable Probe and profile; otherwise report exactly what is missing. Do not change infrastructure records merely to make an Exploration appear runnable.
+8. Ingestion prepares research but does not authorize compute. Do not run `dawn run`, create a Run, or author Evidence unless separately requested and backed by an actual execution or reviewable Source. A Run never becomes Evidence automatically.
+9. Finish by running the relevant tests and `dawn validate`. Report reused, created, or updated objects; proposed Relations; the Exploration; resolver selections; and all remaining blockers. Leave the private packet in place unless the user explicitly asks to remove it.
+
 ## Python verification on Windows
 
 Use `.venv\Scripts\python.exe` for local final tests. Before final tests, run `.venv\Scripts\python.exe -c "import sys; print(sys.executable)"` and check required package imports. Do not use `python`, `py` or system Python for final tests. Report the actual Python path and test results.
