@@ -1,132 +1,123 @@
 # DAWN Open Research
 
-DAWN is a Git-native research program studying whether AI computation can become explicit, traceable, causally testable, and eventually selectively executable with physical efficiency. This repository contains its public research graph, executable plans, infrastructure references, schemas, and run provenance. Git is the source of truth; websites, indexes, and generated status views are projections.
+DAWN is a Git-native research program studying whether AI computation can become explicit, traceable, causally testable, and eventually selectively executable with physical efficiency. Git is the source of truth; websites, indexes, and generated status views are projections.
+
+The research model has five concepts:
+
+- **Question — What do we want to know?** An unresolved knowledge target.
+- **Study — What research are we doing?** A bounded unit of work that connects goals, research objects, requirements, and execution.
+- **Claim — What do we assert or interpret?** A proposition or reusable interpretation whose maturity is tracked separately from its type.
+- **Method — How do we investigate it?** A reusable experiment, benchmark, analysis, proof attempt, simulation, or intervention protocol.
+- **Result — What actually came out?** An observed or derived outcome with explicit Run or Reference provenance, scope, and limitations.
+
+These objects form a graph, not a required pipeline. A Claim or Method can be reused by many Studies, a Result can bear on several Claims, and research can begin with any of the five concepts.
+
+Supporting concepts come second:
+
+- **Connections** record reviewable semantic or provenance assertions. A Result supports, weakens, or contradicts a Claim only through an explicit Connection.
+- **References** record external provenance such as papers, datasets, repositories, documentation, and benchmarks.
+- **Runs** record concrete historical executions.
+- **Artifacts** record identifiable inputs and outputs with digests where available.
+- **Reproducible infrastructure** resolves capabilities to pinned repositories, environments, and resource profiles without overstating readiness.
 
 ## Start here
 
 ```bash
-# See the program
 dawn status
-dawn explore
-
-# Understand one research thread
-dawn view <EXPLORATION_ID>
-
-# Go deeper into its canonical research context
-dawn view <EXPLORATION_ID> --mode research
-
-# See whether it can run and exactly what is missing
-dawn view <EXPLORATION_ID> --mode execution
-
-# Hand the current canonical state to ChatGPT or another researcher
-dawn export <EXPLORATION_ID> > research.dor.yaml
+dawn studies
+dawn view <STUDY_ID>
+dawn view <STUDY_ID> --mode research
+dawn view <STUDY_ID> --mode execution
+dawn export <STUDY_ID> > research.dor.yaml
 ```
 
-`dawn view` is a read-only projection: compact by default, research-focused with `--mode research`, and resolver-backed with `--mode execution`. Add `--profile <PROFILE>` to execution mode to inspect only one profile. `dawn export` writes one self-contained YAML snapshot to standard output; add `--json` for JSON. Neither command creates canonical research state.
+`dawn view` is read-only: compact by default, canonically bounded with `--mode research`, and resolver-backed with `--mode execution`. Add `--profile <PROFILE>` to execution mode to inspect one resource profile. `dawn export` writes a self-contained YAML snapshot to standard output; `--json` selects JSON. Neither command creates canonical research state.
 
 ## From an idea to reproducible research
 
-`idea/conversation → private DOR Packet → Codex ingest → Exploration → resolve → compute → Run/Evidence`
+`idea/conversation → private DOR Packet → Codex canonicalization → Study → resolve → Run → Result → reviewed Connections → updated Claims and Questions`
 
-A DOR Packet is a private, local handoff document. It carries enough context to continue a research conversation without the original chat, but it is not canonical state and is not accepted as a finding. Codex reads the packet, searches the existing graph, reuses overlapping objects, creates only genuinely distinct objects, prepares an Exploration, and reports what is runnable or blocked.
-
-### 1. Browse what is known and open
+### 1. Browse the program
 
 ```bash
 dawn status
-dawn explore
+dawn studies [QUERY]
 dawn show <ID>
 ```
 
-`dawn status` summarizes open questions, Claim states, Exploration readiness, capabilities, and recent Runs. `dawn explore [QUERY]` lists or filters research plans. `dawn show <ID>` displays one object with its inbound and outbound Relations.
+`dawn status` summarizes open Questions, Claim states, Study readiness, capabilities, and recent Runs. `dawn studies` lists or filters bounded research. `dawn show` displays one canonical object with its inbound and outbound Connections.
 
-### 2. Bring an idea
+### 2. Bring an idea privately
 
-Talk freely with ChatGPT, then use the copy-paste prompt in [DOR_PACKET.md](DOR_PACKET.md) to turn the conversation into one self-contained packet. Save it locally, for example:
+Use [DOR_PACKET.md](DOR_PACKET.md) to turn a conversation into a self-contained private handoff and save it under `.dor/inbox/`. The whole `.dor/` directory is ignored by Git. That reduces accidental publication; it is not encryption or access control.
 
-```text
-.dor/inbox/operator-routing.dor.yaml
-```
+The Packet can retain questions, candidate propositions, interpretations, experimental ideas, alternative explanations, predicted outcomes, failure modes, references, and execution context. It is not canonical scientific state. Predicted outcomes are not Results, and a conversation is not a Reference.
 
-The entire `.dor/` directory is ignored by Git. This reduces accidental publication; it is not encryption, access control, or permission to store credentials.
+### 3. Canonicalize into a Study
 
-### 3. Hand the packet to Codex
+Ask Codex to read [AGENTS.md](AGENTS.md) and ingest the Packet. Intake hashes and privately archives the unchanged Packet, records a private mapping trace, searches the graph, reuses overlapping objects, creates only genuinely distinct objects, and keeps new Connections proposed until review.
 
-Ask Codex:
+The resulting Study names explicit Questions, Claims, and Methods along with its goal, requirements, profiles, completion criteria, limitations, and blockers. A Question parent is optional.
 
-```text
-Read AGENTS.md and ingest .dor/inbox/operator-routing.dor.yaml.
-```
-
-Ingest is an agent workflow, not a `dawn ingest` command. Codex follows [AGENTS.md](AGENTS.md): it hashes and privately archives the unchanged packet, records a private intake trace, treats packet statements as proposals, searches before creating objects, preserves explicit attribution, adds only reviewable proposed Relations, and never converts a proposed result into Evidence.
-
-### 4. Prepare and resolve an Exploration
-
-The intake connects the idea to the graph and prepares an Exploration with explicit goals, graph context, Probes, requirements, profiles, completion criteria, limitations, and blockers. Resolution is read-only and does not run compute:
+### 4. Resolve without running compute
 
 ```bash
-dawn resolve <EXPLORATION_ID> --profile <PROFILE> --json
+dawn resolve <STUDY_ID> --profile <PROFILE> --json
 ```
 
-The resolver selects compatible registered providers and checks capabilities, the environment lock, profiles, and artifacts. It reports exact selections and blockers instead of calling unavailable assets or untested hardware ready.
+The resolver selects compatible registered providers and checks capabilities, the environment lock, profiles, and artifacts. It reports exact selections and blockers. Missing assets, incomplete locks, and unverified hardware remain blocked.
 
-### 5. Compute on suitable infrastructure
+### 5. Execute on suitable infrastructure
 
-Use your own compatible local, GPU, TPU, or TRC compute only after resolution and environment checks. The current `dawn run` implementation is limited to the pinned legacy DAWN-SRW zero-shot evaluator:
+The current `dawn run` adapter is intentionally narrow: it invokes the pinned DAWN-SRW zero-shot evaluator without copying that implementation into this repository.
 
 ```bash
-dawn run <EXPLORATION_ID> --profile <PROFILE> \
-  --legacy-repo <PINNED_DAWN_SRW_CHECKOUT> \
+dawn run <STUDY_ID> --profile <PROFILE> \
+  --implementation-repo <PINNED_DAWN_SRW_CHECKOUT> \
   --artifact <ARTIFACT_ID>=<LOCAL_PATH> \
   --executor github:<username> --limit 32
 ```
 
-See [the reproducibility model](docs/reproducibility/model.md) for the exact execution boundary. A successful command records a Run; it does not create Evidence automatically.
+A Run freezes the research revision, implementation revision, environment, profile, configuration, input digests, timestamps, executor, status, outputs, and failure or invalidation information. Creating a Run never creates a Result automatically.
 
-### 6. Return reviewed results
+### 6. Author and connect Results
 
-Keep every terminal Run and its provenance, including negative, failed, cancelled, or invalidated outcomes. After review, author Evidence with an explicit observation, scope, limitations, and Run or Source provenance. Graph updates and accepted Relations can then support, weaken, contradict, or refine the next round of research.
+After reviewing an actual execution or a reviewable external Reference, author a scoped Result with explicit provenance and limitations. Add a proposed Connection describing how it bears on a Claim. Only an accepted supporting Result Connection permits a Claim to be marked `supported` or `robust`; the mere presence of a Result never changes Claim status.
 
-## Four layers, one source of truth
+Negative, failed, cancelled, and invalidated outcomes remain part of the history.
 
-- **DOR Packet** — rich private input context under `.dor/inbox/`.
-- **Intake Trace** — private transformation provenance under `.dor/archive/` and `.dor/maps/`; it explains canonicalization but is never scientific Evidence.
-- **Canonical Graph** — the authoritative Git state: Claim (C), Question (Q), Insight (I), Probe (P), Evidence (E), Source (S), Relation (R), Exploration, infrastructure, Artifact, and Run objects.
-- **View / Export** — generated, purpose-specific projections built only from validated canonical state. They never read `.dor/` and never become a new source of truth.
+## Canonical storage
 
-The working rule is: preserve information richly, canonicalize strictly, and present simply.
+```text
+graph/
+  questions/
+  claims/
+  methods/
+  results/
+  relations/
+  sources/
+studies/
+runs/
+artifacts/
+infra/
+baselines/
+publications/
+```
+
+Connections and References are the human-facing names for internal Relation and Source records. One YAML file stores each persistent object. Strict Pydantic models define the canonical shapes, generated JSON Schemas project them, and cross-object validation fails closed.
 
 ## Install the local CLI
 
-```bash
+```powershell
 git clone https://github.com/madst0614/dawn-open-research.git
 cd dawn-open-research
-python -m venv .venv
-# Activate .venv using your shell, then:
-python -m pip install -e '.[test]'
-dawn validate
-```
-
-On Windows PowerShell:
-
-```powershell
 py -m venv .venv
 .venv\Scripts\python.exe -m pip install -e ".[test]"
 .venv\Scripts\dawn.exe validate
 ```
 
-The repository has no `uv.lock`; a future release can add one after the research runtime is locked.
+The implemented command surface is `dawn validate`, `dawn status`, `dawn studies [QUERY]`, `dawn show <ID>`, `dawn view <ID>`, `dawn export <ID>`, `dawn resolve <STUDY_ID>`, `dawn run <STUDY_ID>`, and `dawn id new <KIND>`.
 
-## CLI reference
+The eight seeded Studies are owner-directed research plans, not findings. The language-behavior frontier uses separate zero-shot and autoregressive-generation Studies because each requires its own execution entrypoint. All four seeded Claims are proposed. There are no seeded Results or Runs. The executable zero-shot Study remains blocked until a concrete checkpoint and exact TPU environment lock are available.
 
-The implemented command surface is `dawn validate`, `dawn status`, `dawn show <ID>`, `dawn explore [QUERY]`, `dawn view <ID>`, `dawn export <ID>`, `dawn resolve`, `dawn run`, and `dawn id new <KIND>`. Run `dawn <COMMAND> --help` for command-specific arguments. Generate offline-safe stable IDs with `dawn id new Q` or the appropriate registered kind.
-
-The four intended views are **Knowledge** (Claims, Questions, Insights, Evidence, and Sources), **Explore** (work that can be taken on), **Live** (Runs and review in progress), and **People** (attributed contributions). In v0, Git and the CLI provide these views. There is no web service or database.
-
-The seven seeded Explorations are owner-directed research plans, not findings. Claims are proposed hypotheses. There is no seeded Evidence, Run, supported Claim, or baseline. The first executable Exploration remains blocked until a checkpoint and exact TPU environment lock are available. See [first execution path](docs/reproducibility/model.md) and [legacy inventory](docs/migration/dawn-srw-infrastructure-inventory.md).
-
-## Contribution path
-
-Search existing objects before creating new ones. Add one YAML file per distinct canonical object; generate its ID with `dawn id new <KIND>`. Keep Relations separate and state whether they are semantic or intellectual provenance. Add scope to Claims, provenance to Evidence, and exact revisions to Runs. Submit changes through Git review; `dawn validate` and tests are CI gates. [AGENTS.md](AGENTS.md) is the contributor protocol.
-
-This repository is Apache-2.0. DAWN-SRW remains a separately licensed, read-only, pinned implementation dependency; no legacy code is copied here.
+Search before creating research objects, preserve explicit attribution, keep semantic and intellectual provenance distinct, and run the full test suite plus `dawn validate` before submitting a change. DAWN-SRW remains a separately licensed, read-only, pinned implementation dependency; no implementation code is copied here.

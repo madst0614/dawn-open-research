@@ -36,7 +36,6 @@
       "enum": [
         "proposed",
         "open",
-        "scoped",
         "active",
         "partially_resolved",
         "resolved",

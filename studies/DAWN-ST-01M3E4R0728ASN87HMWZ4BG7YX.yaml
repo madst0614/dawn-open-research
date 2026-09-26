@@ -1,0 +1,26 @@
+id: DAWN-ST-01M3E4R0728ASN87HMWZ4BG7YX
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-26T05:59:34+00:00'
+title: Candidate identification quality
+lifecycle: planned
+question_ids:
+- DAWN-Q-01M3E4R071CQJ5ZB1XKVFQE9ZY
+claim_ids: []
+method_ids: []
+goal: Relate candidate recall and miss rate to validation loss, downstream quality and operator behavior.
+motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
+requires:
+  capabilities:
+  - analysis.candidate_recall@1
+  artifacts: []
+profile_ids:
+- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+entrypoint: null
+expected_outputs: []
+completion_criteria: Specify a Method, obtain required capabilities and review observations.
+known_limitations:
+- No public research Result is established by this Study.
+blockers:
+- Candidate oracle and recall measurement protocol are absent.
+declared_readiness: null

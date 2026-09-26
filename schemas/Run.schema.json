@@ -143,10 +143,6 @@
       "title": "Executor",
       "type": "string"
     },
-    "exploration_id": {
-      "title": "Exploration Id",
-      "type": "string"
-    },
     "hardware_class": {
       "title": "Hardware Class",
       "type": "string"
@@ -194,6 +190,10 @@
       "default": null,
       "title": "Invalidation"
     },
+    "method_id": {
+      "title": "Method Id",
+      "type": "string"
+    },
     "native_manifest_digest": {
       "anyOf": [
         {
@@ -225,10 +225,6 @@
       ],
       "default": null,
       "title": "Params Hash"
-    },
-    "probe_id": {
-      "title": "Probe Id",
-      "type": "string"
     },
     "produced_artifact_ids": {
       "items": {
@@ -291,14 +287,18 @@
       ],
       "title": "Status",
       "type": "string"
+    },
+    "study_id": {
+      "title": "Study Id",
+      "type": "string"
     }
   },
   "required": [
     "id",
     "created_by",
     "created_at",
-    "exploration_id",
-    "probe_id",
+    "study_id",
+    "method_id",
     "research_revision",
     "research_dirty",
     "implementations",

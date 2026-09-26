@@ -8,17 +8,54 @@ import yaml
 from pydantic import ValidationError
 
 from .ids import validate_id
-from .models import DIRECTORIES, Program, Record, Claim, Evidence, Relation, Exploration, InfrastructureProvider, ResourceProfile, Artifact, Run, Baseline, PublicationManifest
+from .models import (
+    Artifact,
+    Baseline,
+    Claim,
+    DIRECTORIES,
+    InfrastructureProvider,
+    Program,
+    PublicationManifest,
+    Record,
+    Relation,
+    ResourceProfile,
+    Result,
+    Run,
+    Study,
+)
 
-SEMANTIC = {"supports", "weakens", "contradicts", "scopes", "answers", "contextualizes", "refines", "generalizes", "specializes", "depends_on", "motivates", "opens", "tests", "produces", "reproduces", "related_to", "implements", "uses"}
+
+SEMANTIC = {
+    "supports",
+    "weakens",
+    "contradicts",
+    "tests",
+    "investigates",
+    "answers",
+    "refines",
+    "generalizes",
+    "specializes",
+    "contextualizes",
+    "motivates",
+    "produces",
+    "reproduces",
+    "related_to",
+    "implements",
+    "uses",
+}
 PROVENANCE = {"derived_from", "inspired_by", "informed_by", "independently_convergent_with"}
 ENDPOINTS = {
-    "supports": ({"E", "C"}, {"C"}),
-    "weakens": ({"E", "C"}, {"C"}),
-    "contradicts": ({"E", "C"}, {"C"}),
-    "tests": ({"P"}, {"C", "Q", "I"}),
-    "answers": ({"E", "C", "I"}, {"Q"}),
-    "produces": ({"P", "RUN"}, {"E", "ART"}),
+    "supports": ({"RES"}, {"C"}),
+    "weakens": ({"RES"}, {"C"}),
+    "contradicts": ({"RES"}, {"C"}),
+    "tests": ({"M"}, {"C"}),
+    "investigates": ({"M"}, {"Q"}),
+    "answers": ({"C"}, {"Q"}),
+    "refines": ({"C"}, {"C"}),
+    "generalizes": ({"C"}, {"C"}),
+    "specializes": ({"C"}, {"C"}),
+    "motivates": ({"C"}, {"Q"}),
+    "produces": ({"M", "RUN"}, {"RES", "ART"}),
 }
 
 
@@ -66,7 +103,8 @@ def load_catalog(root: Path) -> Catalog:
                 validate_id(obj.id, catalog.program.namespace, kind)
                 if obj.id in catalog.objects:
                     raise ValueError(f"duplicate ID also in {catalog.paths[obj.id]}")
-                if path.stem != obj.id and not (relative == "runs" and path.name == "manifest.yaml" and path.parent.name == obj.id):
+                nested_run = relative == "runs" and path.name == "manifest.yaml" and path.parent.name == obj.id
+                if path.stem != obj.id and not nested_run:
                     raise ValueError("file name must match object ID")
                 catalog.objects[obj.id] = obj
                 catalog.paths[obj.id] = path
@@ -84,8 +122,7 @@ def validate_catalog(catalog: Catalog) -> list[str]:
     def check_ref(source: Record, target_id: str, expected=None):
         try:
             validate_id(target_id, ns)
-            target = catalog.get(target_id, expected)
-            return target
+            return catalog.get(target_id, expected)
         except ValueError as exc:
             errors.append(f"{source.id}: {exc}")
             return None
@@ -108,24 +145,31 @@ def validate_catalog(catalog: Catalog) -> list[str]:
                     errors.append(f"{obj.id}: invalid endpoints for {obj.relation_type}")
             if obj.asserted_at.tzinfo is None:
                 errors.append(f"{obj.id}: asserted_at requires timezone")
-        elif isinstance(obj, Evidence):
+
+        elif isinstance(obj, Result):
+            from .models import Source
+
             for ref in obj.run_ids:
                 check_ref(obj, ref, Run)
             for ref in obj.source_ids:
-                from .models import Source
                 check_ref(obj, ref, Source)
-        elif isinstance(obj, Exploration):
-            from .models import Probe
-            for ref in obj.graph_context + obj.targets:
-                check_ref(obj, ref)
-            for ref in obj.probe_ids:
-                check_ref(obj, ref, Probe)
+
+        elif isinstance(obj, Study):
+            from .models import Method, Question
+
+            for ref in obj.question_ids:
+                check_ref(obj, ref, Question)
+            for ref in obj.claim_ids:
+                check_ref(obj, ref, Claim)
+            for ref in obj.method_ids:
+                check_ref(obj, ref, Method)
             for ref in obj.requires.artifacts:
                 check_ref(obj, ref, Artifact)
             for ref in obj.profile_ids:
                 check_ref(obj, ref, ResourceProfile)
             if obj.declared_readiness in {"local", "public"}:
                 from .resolver import resolve
+
                 plans = []
                 for profile_id in obj.profile_ids:
                     try:
@@ -136,10 +180,14 @@ def validate_catalog(catalog: Catalog) -> list[str]:
                     errors.append(f"{obj.id}: declared readiness without a resource profile")
                 readiness_key = "ready" if obj.declared_readiness == "local" else "publicly_reproducible"
                 if plans and not any(plan[readiness_key] for plan in plans):
-                    errors.append(f"{obj.id}: declared {obj.declared_readiness} with missing dependencies: "
-                                  f"{[plan['blockers'] for plan in plans]}")
+                    errors.append(
+                        f"{obj.id}: declared {obj.declared_readiness} with missing dependencies: "
+                        f"{[plan['blockers'] for plan in plans]}"
+                    )
+
         elif isinstance(obj, InfrastructureProvider):
-            from .models import RepositoryRef, Environment
+            from .models import Environment, RepositoryRef
+
             check_ref(obj, obj.repository_id, RepositoryRef)
             for ref in obj.environment_ids:
                 check_ref(obj, ref, Environment)
@@ -149,35 +197,42 @@ def validate_catalog(catalog: Catalog) -> list[str]:
                 verification = check_ref(obj, ref, Run)
                 if verification and verification.status != "completed":
                     errors.append(f"{obj.id}: verification Run must be completed")
-                if verification and not any(frozen.provider_id == obj.id
-                                            for frozen in verification.implementations):
+                if verification and not any(
+                    frozen.provider_id == obj.id for frozen in verification.implementations
+                ):
                     errors.append(f"{obj.id}: verification Run does not use this provider")
             if obj.status == "validated" and not obj.verification_run_ids:
                 errors.append(f"{obj.id}: validated provider needs verification Run")
+
         elif isinstance(obj, ResourceProfile):
             from .models import Environment
+
             for ref in obj.environment_ids:
                 check_ref(obj, ref, Environment)
+
         elif isinstance(obj, Artifact):
             from .models import RepositoryRef
+
             if obj.repository_id:
                 check_ref(obj, obj.repository_id, RepositoryRef)
             if obj.produced_by_run_id:
                 check_ref(obj, obj.produced_by_run_id, Run)
             if obj.availability == "public" and not (obj.uri and obj.digest):
                 errors.append(f"{obj.id}: public artifact requires URI and digest")
+
         elif isinstance(obj, Run):
-            exploration = check_ref(obj, obj.exploration_id, Exploration)
-            from .models import Probe, Environment, RepositoryRef
-            check_ref(obj, obj.probe_id, Probe)
+            from .models import Environment, Method, RepositoryRef
+
+            study = check_ref(obj, obj.study_id, Study)
+            check_ref(obj, obj.method_id, Method)
             environment = check_ref(obj, obj.environment_id, Environment)
             profile = check_ref(obj, obj.profile_id, ResourceProfile)
-            if exploration and obj.probe_id not in exploration.probe_ids:
-                errors.append(f"{obj.id}: Probe is not part of Exploration")
-            if exploration and exploration.entrypoint_probe_id and obj.probe_id != exploration.entrypoint_probe_id:
-                errors.append(f"{obj.id}: Run Probe differs from Exploration entrypoint Probe")
-            if exploration and obj.profile_id not in exploration.profile_ids:
-                errors.append(f"{obj.id}: profile is not supported by Exploration")
+            if study and obj.method_id not in study.method_ids:
+                errors.append(f"{obj.id}: Method is not part of Study")
+            if study and study.entrypoint_method_id and obj.method_id != study.entrypoint_method_id:
+                errors.append(f"{obj.id}: Run Method differs from Study entrypoint Method")
+            if study and obj.profile_id not in study.profile_ids:
+                errors.append(f"{obj.id}: profile is not supported by Study")
             if profile and environment and environment.id not in profile.environment_ids:
                 errors.append(f"{obj.id}: profile/environment incompatibility")
             covered = set()
@@ -186,18 +241,21 @@ def validate_catalog(catalog: Catalog) -> list[str]:
                 check_ref(obj, frozen.repository_id, RepositoryRef)
                 if provider:
                     covered.update(provider.capabilities)
-                    if provider.interface_version != frozen.interface_version or provider.repository_id != frozen.repository_id:
+                    if (
+                        provider.interface_version != frozen.interface_version
+                        or provider.repository_id != frozen.repository_id
+                    ):
                         errors.append(f"{obj.id}: frozen provider interface/repository mismatch")
                     if obj.environment_id not in provider.environment_ids or obj.profile_id not in provider.profile_ids:
                         errors.append(f"{obj.id}: provider incompatible with Run environment/profile")
-            if exploration and set(exploration.requires.capabilities) - covered:
+            if study and set(study.requires.capabilities) - covered:
                 errors.append(f"{obj.id}: Run does not cover all required capabilities")
             for frozen in obj.input_artifacts:
                 artifact = check_ref(obj, frozen.artifact_id, Artifact)
                 if artifact and artifact.digest and frozen.digest != artifact.digest:
                     errors.append(f"{obj.id}: input Artifact digest differs from registry")
-            if exploration and set(exploration.requires.artifacts) != {item.artifact_id for item in obj.input_artifacts}:
-                errors.append(f"{obj.id}: Run input Artifacts differ from Exploration")
+            if study and set(study.requires.artifacts) != {item.artifact_id for item in obj.input_artifacts}:
+                errors.append(f"{obj.id}: Run input Artifacts differ from Study")
             for ref in obj.produced_artifact_ids:
                 check_ref(obj, ref, Artifact)
             config_relative = Path(obj.config_path)
@@ -215,22 +273,26 @@ def validate_catalog(catalog: Catalog) -> list[str]:
                 errors.append(f"{obj.id}: failed Run requires error")
             if obj.status == "invalidated" and not obj.invalidation:
                 errors.append(f"{obj.id}: invalidated Run requires reason")
-            if obj.status == "completed" and exploration and exploration.entrypoint == "legacy.zero_shot_eval_jax@1":
+            if obj.status == "completed" and study and study.entrypoint == "dawn_srw.zero_shot_eval_jax@1":
                 if not (obj.native_manifest_digest and obj.software_versions and obj.dataset_provenance):
                     errors.append(f"{obj.id}: completed zero-shot Run lacks native software/dataset provenance")
+
         elif isinstance(obj, Baseline):
             for ref in obj.run_ids:
                 check_ref(obj, ref, Run)
+
         elif isinstance(obj, PublicationManifest):
             for ref in obj.object_ids + obj.run_ids + obj.artifact_ids:
                 check_ref(obj, ref)
 
     for claim in catalog.of_type(Claim):
         if claim.status in {"supported", "robust"} and not any(
-            isinstance(rel, Relation) and rel.relation_type == "supports"
-            and rel.status == "accepted" and rel.target_id == claim.id
-            and isinstance(catalog.objects.get(rel.source_id), Evidence)
+            isinstance(rel, Relation)
+            and rel.relation_type == "supports"
+            and rel.status == "accepted"
+            and rel.target_id == claim.id
+            and isinstance(catalog.objects.get(rel.source_id), Result)
             for rel in catalog.objects.values()
         ):
-            errors.append(f"{claim.id}: {claim.status} Claim requires accepted supporting Evidence relation")
+            errors.append(f"{claim.id}: {claim.status} Claim requires accepted supporting Result relation")
     return errors

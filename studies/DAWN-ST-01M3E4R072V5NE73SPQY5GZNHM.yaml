@@ -1,0 +1,37 @@
+id: DAWN-ST-01M3E4R072V5NE73SPQY5GZNHM
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-26T05:59:34+00:00'
+title: Frozen stock zero-shot language evaluation
+lifecycle: blocked
+question_ids:
+- DAWN-Q-01M3E4R071NBX7X2KYEJ9CTKHC
+claim_ids: []
+method_ids:
+- DAWN-M-01M3E4R07153DBQB3GE6HYWGQK
+goal: Measure the reference checkpoint on six stock zero-shot language tasks under a fixed protocol.
+motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
+requires:
+  capabilities:
+  - model.dawn_srw@1
+  - checkpoint.load@1
+  - evaluation.zero_shot@1
+  - runtime.jax@1
+  - runtime.tpu@1
+  artifacts:
+  - DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
+profile_ids:
+- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+entrypoint: dawn_srw.zero_shot_eval_jax@1
+entrypoint_method_id: DAWN-M-01M3E4R07153DBQB3GE6HYWGQK
+expected_outputs:
+- results_summary.json
+- run_manifest.json
+- logs
+completion_criteria: Review reproducible observations and author Results explicitly before updating any Claim.
+known_limitations:
+- No public research Result is established by this Study.
+blockers:
+- Checkpoint has not been located locally or given a public digest.
+- TPU software environment has no exact lock digest.
+declared_readiness: blocked

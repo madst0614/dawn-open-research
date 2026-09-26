@@ -1,9 +1,0 @@
-id: DAWN-P-01M31BREPBF76RQHY03BB6W2Z9
-schema_version: 1
-created_by: github:madst0614
-created_at: '2026-09-21T06:51:00+00:00'
-title: Autoregressive generation sampling
-method: evaluation
-protocol: Generate from fixed prompts with a frozen checkpoint and fixed decoding settings; inspect language
-  behavior separately from zero-shot scores. Implementation and prompts remain to be specified.
-status: proposed

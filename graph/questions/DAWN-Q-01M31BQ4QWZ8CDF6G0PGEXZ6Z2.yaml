@@ -1,8 +1,0 @@
-id: DAWN-Q-01M31BQ4QWZ8CDF6G0PGEXZ6Z2
-schema_version: 1
-created_by: github:madst0614
-created_at: '2026-09-21T06:51:00+00:00'
-title: Reference checkpoint language behavior
-question: Under a fixed protocol, how does the reference DAWN-SRW checkpoint perform on autoregressive
-  generation and stock zero-shot language tasks?
-status: proposed

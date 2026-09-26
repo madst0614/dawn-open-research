@@ -40,37 +40,36 @@ class Record(StrictModel):
         return value
 
 
-class Claim(Record):
-    title: str
-    proposition: str
-    scope: str = Field(min_length=1)
-    status: Literal["proposed", "tentative", "supported", "robust", "disputed", "limited", "contradicted", "superseded"]
-
-
 class Question(Record):
     title: str
     question: str
-    status: Literal["proposed", "open", "scoped", "active", "partially_resolved", "resolved", "blocked", "superseded"]
+    status: Literal[
+        "proposed", "open", "active", "partially_resolved", "resolved", "blocked", "superseded"
+    ]
 
 
-class Insight(Record):
+class Claim(Record):
     title: str
-    interpretation: str
-    scope: str
+    statement: str
+    claim_type: Literal["proposition", "interpretation"]
+    scope: str = Field(min_length=1)
+    status: Literal[
+        "proposed", "tentative", "supported", "robust", "disputed", "limited", "contradicted", "superseded"
+    ]
 
 
-class Probe(Record):
+class Method(Record):
     title: str
-    method: str
+    description: str
     protocol: str
     status: Literal["proposed", "specified", "validated", "deprecated"]
 
 
-class Evidence(Record):
+class Result(Record):
     title: str
-    observation: str
-    scope: str
-    limitations: str
+    statement: str
+    scope: str = Field(min_length=1)
+    limitations: str = Field(min_length=1)
     run_ids: list[str] = Field(default_factory=list)
     source_ids: list[str] = Field(default_factory=list)
     authors: list[str]
@@ -79,7 +78,7 @@ class Evidence(Record):
     @model_validator(mode="after")
     def require_provenance(self):
         if not (self.run_ids or self.source_ids):
-            raise ValueError("Evidence requires a Run or Source")
+            raise ValueError("Result requires a Run or Source")
         return self
 
 
@@ -114,18 +113,18 @@ class Requirements(StrictModel):
     artifacts: list[str] = Field(default_factory=list)
 
 
-class Exploration(Record):
+class Study(Record):
     title: str
     lifecycle: Literal["draft", "planned", "active", "completed", "blocked", "superseded"]
-    graph_context: list[str] = Field(default_factory=list)
-    targets: list[str] = Field(default_factory=list)
+    question_ids: list[str] = Field(default_factory=list)
+    claim_ids: list[str] = Field(default_factory=list)
+    method_ids: list[str] = Field(default_factory=list)
     goal: str
     motivation: str
-    probe_ids: list[str] = Field(default_factory=list)
     requires: Requirements = Field(default_factory=Requirements)
     profile_ids: list[str] = Field(default_factory=list)
     entrypoint: str | None = None
-    entrypoint_probe_id: str | None = None
+    entrypoint_method_id: str | None = None
     expected_outputs: list[str] = Field(default_factory=list)
     completion_criteria: str
     known_limitations: list[str] = Field(default_factory=list)
@@ -133,11 +132,11 @@ class Exploration(Record):
     declared_readiness: Literal["draft", "local", "public", "blocked"] | None = None
 
     @model_validator(mode="after")
-    def executable_probe_is_explicit(self):
-        if self.entrypoint and self.entrypoint_probe_id not in self.probe_ids:
-            raise ValueError("entrypoint_probe_id must name a Probe in probe_ids")
-        if self.entrypoint_probe_id and not self.entrypoint:
-            raise ValueError("entrypoint_probe_id requires an entrypoint")
+    def executable_method_is_explicit(self):
+        if self.entrypoint and self.entrypoint_method_id not in self.method_ids:
+            raise ValueError("entrypoint_method_id must name a Method in method_ids")
+        if self.entrypoint_method_id and not self.entrypoint:
+            raise ValueError("entrypoint_method_id requires an entrypoint")
         return self
 
 
@@ -225,8 +224,8 @@ class FrozenArtifact(StrictModel):
 
 
 class Run(Record):
-    exploration_id: str
-    probe_id: str
+    study_id: str
+    method_id: str
     research_revision: str = Field(pattern=r"^[0-9a-f]{40}$")
     research_dirty: bool
     implementations: list[FrozenProvider] = Field(min_length=1)
@@ -279,14 +278,19 @@ class PublicationManifest(Record):
 
 
 DIRECTORIES = {
-    "graph/claims": ("C", Claim), "graph/questions": ("Q", Question),
-    "graph/insights": ("I", Insight), "graph/probes": ("P", Probe),
-    "graph/evidence": ("E", Evidence), "graph/sources": ("S", Source),
-    "graph/relations": ("R", Relation), "explorations": ("X", Exploration),
+    "graph/questions": ("Q", Question),
+    "graph/claims": ("C", Claim),
+    "graph/methods": ("M", Method),
+    "graph/results": ("RES", Result),
+    "graph/relations": ("REL", Relation),
+    "graph/sources": ("SRC", Source),
+    "studies": ("ST", Study),
     "infra/repositories": ("REPO", RepositoryRef),
     "infra/providers": ("INFRA", InfrastructureProvider),
     "infra/environments": ("ENV", Environment),
     "infra/profiles": ("PROFILE", ResourceProfile),
-    "artifacts/registry": ("ART", Artifact), "runs": ("RUN", Run),
-    "baselines": ("BL", Baseline), "publications": ("PUB", PublicationManifest),
+    "artifacts/registry": ("ART", Artifact),
+    "runs": ("RUN", Run),
+    "baselines": ("BL", Baseline),
+    "publications": ("PUB", PublicationManifest),
 }

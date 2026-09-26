@@ -1,0 +1,7 @@
+id: DAWN-Q-01M3E4R0714580E2PH6MQV64ZW
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-26T05:59:34+00:00'
+title: Physical sparse execution
+question: Can logical locality yield realized physical execution savings without material quality loss?
+status: proposed

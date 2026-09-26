@@ -1,9 +1,0 @@
-id: DAWN-S-01M31BQ4QWFGVD7Z2P679X2Y7X
-schema_version: 1
-created_by: github:madst0614
-created_at: '2026-09-21T06:51:00+00:00'
-title: DAWN-SRW zero-shot evaluation protocol documentation
-source_type: documentation
-uri: https://github.com/madst0614/DAWN-SRW/blob/30165201e68897d75f0586805d321393159550c3/docs/zero_shot_eval.md
-source_statement: The repository documents a frozen Orbax zero-shot evaluator using lm-eval 0.4.2 and
-  six stock tasks.

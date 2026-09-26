@@ -1,6 +1,14 @@
 {
   "additionalProperties": false,
   "properties": {
+    "claim_type": {
+      "enum": [
+        "proposition",
+        "interpretation"
+      ],
+      "title": "Claim Type",
+      "type": "string"
+    },
     "contributors": {
       "items": {
         "type": "string"
@@ -22,10 +30,6 @@
       "title": "Id",
       "type": "string"
     },
-    "proposition": {
-      "title": "Proposition",
-      "type": "string"
-    },
     "schema_version": {
       "const": 1,
       "default": 1,
@@ -35,6 +39,10 @@
     "scope": {
       "minLength": 1,
       "title": "Scope",
+      "type": "string"
+    },
+    "statement": {
+      "title": "Statement",
       "type": "string"
     },
     "status": {
@@ -61,7 +69,8 @@
     "created_by",
     "created_at",
     "title",
-    "proposition",
+    "statement",
+    "claim_type",
     "scope",
     "status"
   ],

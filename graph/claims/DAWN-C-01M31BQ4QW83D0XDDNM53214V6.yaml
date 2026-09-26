@@ -1,8 +1,0 @@
-id: DAWN-C-01M31BQ4QW83D0XDDNM53214V6
-schema_version: 1
-created_by: github:madst0614
-created_at: '2026-09-21T06:51:00+00:00'
-title: Structure may matter independently
-proposition: Structured operator organization has functional value beyond candidate count.
-scope: DAWN-SRW candidate-selection experiments with matched training and evaluation.
-status: proposed

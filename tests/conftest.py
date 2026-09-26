@@ -13,7 +13,7 @@ def research_tree(tmp_path):
     root = tmp_path / "program"
     root.mkdir()
     shutil.copy2(SOURCE_ROOT / "program.yaml", root / "program.yaml")
-    for directory in ("graph", "explorations", "infra", "artifacts"):
+    for directory in ("graph", "studies", "infra", "artifacts", "runs", "baselines", "publications"):
         shutil.copytree(SOURCE_ROOT / directory, root / directory)
     return root
 
