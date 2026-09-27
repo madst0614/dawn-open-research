@@ -24,7 +24,11 @@ from conftest import read_yaml, write_yaml
 
 
 def executable_study(catalog):
-    return next(item for item in catalog.of_type(Study) if item.entrypoint)
+    return next(
+        item
+        for item in catalog.of_type(Study)
+        if any(plan.entrypoint for plan in item.execution.plans)
+    )
 
 
 def canonical_files(root: Path) -> dict[str, bytes]:
@@ -38,10 +42,18 @@ def canonical_files(root: Path) -> dict[str, bytes]:
 def add_result_provenance(research_tree: Path):
     catalog = load_catalog(research_tree)
     study = executable_study(catalog)
-    profile = catalog.get(study.profile_ids[0], ResourceProfile)
+    execution_plan = next(plan for plan in study.execution.plans if plan.entrypoint)
+    profile = catalog.get(execution_plan.profile_ids[0], ResourceProfile)
     environment_id = profile.environment_ids[0]
+    lock = research_tree / "fixture.lock"
+    lock.write_bytes(b"fixture dependencies")
+    environment_path = catalog.paths[environment_id]
+    environment = read_yaml(environment_path)
+    environment["lockfile"] = "fixture.lock"
+    environment["lock_digest"] = "sha256:" + hashlib.sha256(lock.read_bytes()).hexdigest()
+    write_yaml(environment_path, environment)
     selected = {}
-    for capability in study.requires.capabilities:
+    for capability in execution_plan.requires.capabilities:
         candidates = sorted(
             [
                 provider
@@ -66,7 +78,7 @@ def add_result_provenance(research_tree: Path):
         created_by="github:test",
         created_at="2026-09-26T00:00:00Z",
         study_id=study.id,
-        method_id=study.entrypoint_method_id,
+        method_id=execution_plan.method_id,
         research_revision="b" * 40,
         research_dirty=False,
         implementations=[
@@ -80,7 +92,7 @@ def add_result_provenance(research_tree: Path):
             for provider in sorted(providers.values(), key=lambda item: item.id)
         ],
         environment_id=environment_id,
-        environment_lock_digest="sha256:" + "a" * 64,
+        environment_lock_digest=environment["lock_digest"],
         profile_id=profile.id,
         hardware_class=profile.hardware_class,
         input_artifacts=[
@@ -89,11 +101,11 @@ def add_result_provenance(research_tree: Path):
                 "digest": "sha256:" + "c" * 64,
                 "location": str(local_artifact),
             }
-            for artifact_id in study.requires.artifacts
+            for artifact_id in execution_plan.requires.artifacts
         ],
         config_digest="sha256:" + hashlib.sha256(config_bytes).hexdigest(),
         config_path="config.json",
-        command=["fixture-evaluator", f"artifact:{study.requires.artifacts[0]}"],
+        command=["fixture-evaluator", f"artifact:{execution_plan.requires.artifacts[0]}"],
         executor="github:test",
         started_at="2026-09-26T00:00:00Z",
         status="created",
@@ -120,8 +132,7 @@ def add_result_provenance(research_tree: Path):
         statement="A fixture outcome tied to exact provenance.",
         scope="Projection tests only.",
         limitations=str(local_artifact),
-        run_ids=[run.id],
-        source_ids=[source.id],
+        grounding_ids=[run.id, source.id],
         authors=["github:test"],
     )
     result_dir = research_tree / "graph" / "results"
@@ -159,6 +170,7 @@ def test_compact_study_view_answers_research_questions(research_tree, capsys):
     assert result["focus"]["title"] == study.title
     assert result["state"]["readiness"] == "blocked"
     assert result["what_are_we_studying"] == study.goal
+    assert result["why"] == study.motivation
     assert result["questions"] and result["methods"] and result["profiles"]
     assert result["claims"] == [] and result["results"] == []
     assert result["latest_run"] is None
@@ -189,6 +201,7 @@ def test_research_view_uses_bounded_explicit_graph_closure(research_tree):
         "methods",
         "results",
         "references",
+        "artifacts",
         "connections",
         "other_objects",
     }
@@ -239,38 +252,36 @@ def test_result_run_and_reference_provenance_are_exact(research_tree):
 def test_execution_view_is_resolver_output_and_profile_filter(research_tree):
     catalog = load_catalog(research_tree)
     study = executable_study(catalog)
-    profile = catalog.get(study.profile_ids[0], ResourceProfile)
-    expected = resolve(catalog, study.id, profile.id)
+    execution_plan = next(plan for plan in study.execution.plans if plan.entrypoint)
+    profile = catalog.get(execution_plan.profile_ids[0], ResourceProfile)
+    expected = resolve(
+        catalog,
+        study.id,
+        profile.id,
+        method_id=execution_plan.method_id,
+    )
     result = build_view(catalog, study.id, "execution")
-    assert result["resolutions"] == [expected]
-    assert result["resolutions"][0]["blockers"] == expected["blockers"]
+    assert expected in result["resolutions"]
+    selected = build_view(
+        catalog,
+        study.id,
+        "execution",
+        profile.name,
+        execution_plan.method_id,
+    )
+    assert selected["resolutions"] == [expected]
+    assert selected["resolutions"][0]["blockers"] == expected["blockers"]
     assert result["ready"] == expected["ready"]
     assert result["publicly_reproducible"] == expected["publicly_reproducible"]
 
-    alternate = profile.model_copy(
-        update={"id": new_id(catalog.program.namespace, "PROFILE"), "name": profile.name + "-alternate"}
-    )
-    catalog.objects[alternate.id] = alternate
-    study.profile_ids.append(alternate.id)
-    all_profiles = build_view(catalog, study.id, "execution")
     filtered = build_view(catalog, study.id, "execution", profile.name)
-    assert [item["profile_id"] for item in all_profiles["resolutions"]] == sorted(study.profile_ids)
-    assert filtered["resolutions"] == [resolve(catalog, study.id, profile.name)]
+    assert len(filtered["resolutions"]) == len(study.execution.plans)
 
-    unspecified = next(item for item in catalog.of_type(Study) if not item.entrypoint)
+    unspecified = next(item for item in catalog.of_type(Study) if not item.execution.plans)
     unspecified_view = build_view(catalog, unspecified.id, "execution")
     assert unspecified_view["applicable"] is True
     assert unspecified_view["ready"] is False
-    assert any(
-        "no entrypoint" in blocker
-        for plan in unspecified_view["resolutions"]
-        for blocker in plan["blockers"]
-    )
-    assert any(
-        "no executable Method" in blocker
-        for plan in unspecified_view["resolutions"]
-        for blocker in plan["blockers"]
-    )
+    assert "Study has no execution plans" in unspecified_view["blockers"]
 
 
 def test_export_is_deterministic_private_safe_and_read_only(research_tree, monkeypatch, capsys):
@@ -294,6 +305,7 @@ def test_export_is_deterministic_private_safe_and_read_only(research_tree, monke
         "methods",
         "results",
         "references",
+        "artifacts",
         "connections",
         "other_objects",
     }

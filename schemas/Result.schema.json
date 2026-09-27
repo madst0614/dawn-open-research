@@ -5,6 +5,7 @@
       "items": {
         "type": "string"
       },
+      "minItems": 1,
       "title": "Authors",
       "type": "array"
     },
@@ -25,6 +26,14 @@
       "title": "Created By",
       "type": "string"
     },
+    "grounding_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Grounding Ids",
+      "type": "array"
+    },
     "id": {
       "title": "Id",
       "type": "string"
@@ -41,13 +50,6 @@
       "title": "Reviewers",
       "type": "array"
     },
-    "run_ids": {
-      "items": {
-        "type": "string"
-      },
-      "title": "Run Ids",
-      "type": "array"
-    },
     "schema_version": {
       "const": 1,
       "default": 1,
@@ -59,18 +61,13 @@
       "title": "Scope",
       "type": "string"
     },
-    "source_ids": {
-      "items": {
-        "type": "string"
-      },
-      "title": "Source Ids",
-      "type": "array"
-    },
     "statement": {
+      "minLength": 1,
       "title": "Statement",
       "type": "string"
     },
     "title": {
+      "minLength": 1,
       "title": "Title",
       "type": "string"
     }
@@ -83,6 +80,7 @@
     "statement",
     "scope",
     "limitations",
+    "grounding_ids",
     "authors"
   ],
   "title": "Result",

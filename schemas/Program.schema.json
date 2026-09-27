@@ -2,6 +2,7 @@
   "additionalProperties": false,
   "properties": {
     "citation_convention": {
+      "minLength": 1,
       "title": "Citation Convention",
       "type": "string"
     },
@@ -22,10 +23,12 @@
       "type": "string"
     },
     "id_scheme": {
+      "minLength": 1,
       "title": "Id Scheme",
       "type": "string"
     },
     "mission": {
+      "minLength": 1,
       "title": "Mission",
       "type": "string"
     },
@@ -35,10 +38,12 @@
       "type": "string"
     },
     "repository": {
+      "minLength": 1,
       "title": "Repository",
       "type": "string"
     },
     "review_policy": {
+      "minLength": 1,
       "title": "Review Policy",
       "type": "string"
     },
@@ -48,6 +53,7 @@
       "type": "integer"
     },
     "title": {
+      "minLength": 1,
       "title": "Title",
       "type": "string"
     },

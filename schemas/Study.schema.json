@@ -1,5 +1,75 @@
 {
   "$defs": {
+    "ExecutionPlan": {
+      "additionalProperties": false,
+      "description": "Method-specific execution configuration embedded in a Study.",
+      "properties": {
+        "blockers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blockers",
+          "type": "array"
+        },
+        "declared_readiness": {
+          "anyOf": [
+            {
+              "enum": [
+                "draft",
+                "local",
+                "public",
+                "blocked"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Readiness"
+        },
+        "entrypoint": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entrypoint"
+        },
+        "expected_outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Expected Outputs",
+          "type": "array"
+        },
+        "method_id": {
+          "title": "Method Id",
+          "type": "string"
+        },
+        "profile_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Profile Ids",
+          "type": "array"
+        },
+        "requires": {
+          "$ref": "#/$defs/Requirements"
+        }
+      },
+      "required": [
+        "method_id"
+      ],
+      "title": "ExecutionPlan",
+      "type": "object"
+    },
     "Requirements": {
       "additionalProperties": false,
       "properties": {
@@ -20,10 +90,31 @@
       },
       "title": "Requirements",
       "type": "object"
+    },
+    "StudyExecution": {
+      "additionalProperties": false,
+      "properties": {
+        "plans": {
+          "items": {
+            "$ref": "#/$defs/ExecutionPlan"
+          },
+          "title": "Plans",
+          "type": "array"
+        }
+      },
+      "title": "StudyExecution",
+      "type": "object"
     }
   },
   "additionalProperties": false,
   "properties": {
+    "artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Ids",
+      "type": "array"
+    },
     "blockers": {
       "items": {
         "type": "string"
@@ -39,6 +130,7 @@
       "type": "array"
     },
     "completion_criteria": {
+      "minLength": 1,
       "title": "Completion Criteria",
       "type": "string"
     },
@@ -59,56 +151,11 @@
       "title": "Created By",
       "type": "string"
     },
-    "declared_readiness": {
-      "anyOf": [
-        {
-          "enum": [
-            "draft",
-            "local",
-            "public",
-            "blocked"
-          ],
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Declared Readiness"
-    },
-    "entrypoint": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Entrypoint"
-    },
-    "entrypoint_method_id": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Entrypoint Method Id"
-    },
-    "expected_outputs": {
-      "items": {
-        "type": "string"
-      },
-      "title": "Expected Outputs",
-      "type": "array"
+    "execution": {
+      "$ref": "#/$defs/StudyExecution"
     },
     "goal": {
+      "minLength": 1,
       "title": "Goal",
       "type": "string"
     },
@@ -143,15 +190,9 @@
       "type": "array"
     },
     "motivation": {
+      "minLength": 1,
       "title": "Motivation",
       "type": "string"
-    },
-    "profile_ids": {
-      "items": {
-        "type": "string"
-      },
-      "title": "Profile Ids",
-      "type": "array"
     },
     "question_ids": {
       "items": {
@@ -160,8 +201,12 @@
       "title": "Question Ids",
       "type": "array"
     },
-    "requires": {
-      "$ref": "#/$defs/Requirements"
+    "result_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Result Ids",
+      "type": "array"
     },
     "schema_version": {
       "const": 1,
@@ -170,6 +215,7 @@
       "type": "integer"
     },
     "title": {
+      "minLength": 1,
       "title": "Title",
       "type": "string"
     }

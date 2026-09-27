@@ -8,20 +8,14 @@ question_ids:
 - DAWN-Q-01M3E4R0711NK2MK0ZJGES3XRW
 claim_ids: []
 method_ids: []
+result_ids: []
+artifact_ids: []
 goal: Implement and benchmark TPU-native sparse or local RW computation, including correctness, compilation and communication costs.
 motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
-requires:
-  capabilities:
-  - kernel.tpu_sparse_rw@1
-  - benchmark.step_time@1
-  artifacts: []
-profile_ids:
-- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
-entrypoint: null
-expected_outputs: []
 completion_criteria: Specify a Method, obtain required capabilities and review observations.
 known_limitations:
 - No public research Result is established by this Study.
 blockers:
 - TPU-native sparse kernel, benchmark and correctness Method are missing.
-declared_readiness: null
+execution:
+  plans: []

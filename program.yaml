@@ -6,11 +6,16 @@ mission: Study whether AI computation can be explicit, traceable, causally testa
   eventually selectively executable with real physical efficiency.
 repository: https://github.com/madst0614/dawn-open-research
 views:
-- Research
+- Questions
+- Claims
+- Methods
+- Results
+- Connections
+- References
+- Artifacts
 - Studies
 - Runs
-- People
 id_scheme: <NAMESPACE>-<KIND>-<ULID>
-review_policy: GitHub pull requests plus explicit connection status; no automatic claim promotion from Results.
+review_policy: GitHub pull requests plus explicit Relation review; no automatic Claim promotion or Question resolution.
 default_baseline_id: null
 citation_convention: live Git graph -> frozen Git tag/release -> archival DOI later

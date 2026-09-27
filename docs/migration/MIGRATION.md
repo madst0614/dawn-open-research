@@ -1,4 +1,4 @@
-# Universal research model v1 migration ledger
+# Research grammar v1 migration ledger
 
 This bootstrap migration replaced the seed ontology without a compatibility layer. The mapping below is audit documentation only; it is not canonical research state.
 
@@ -8,8 +8,8 @@ This bootstrap migration replaced the seed ontology without a compatibility laye
 |---|---|
 | Exploration | Study |
 | Probe | Method |
-| Evidence | Result |
-| Insight | Claim with `claim_type: interpretation` |
+| Evidence | No direct object; grounded outcomes become Results and evidential roles are expressed by scholarly Relations |
+| Insight | Claim with `claim_type: interpretation` or `definition`, according to meaning |
 
 Question and Claim remain, but every seed object received a new ID. Claim field `proposition` became `statement`, and all migrated seed Claims use `claim_type: proposition`. Source and Relation remain internal canonical concepts with new `SRC` and `REL` IDs and the human-facing names Reference and Connection. Runs now use `study_id` and `method_id`.
 
@@ -49,7 +49,7 @@ Question and Claim remain, but every seed object received a new ID. Claim field 
 
 | Previous ID | New ID |
 |---|---|
-| `DAWN-X-01M31BQ4QW05WDERXGG5181GYJ` | `DAWN-ST-01M3E4R072V5NE73SPQY5GZNHM`, `DAWN-ST-01M3E6EX41TWZ7KRSHDSHNPX3P` |
+| `DAWN-X-01M31BQ4QW05WDERXGG5181GYJ` | `DAWN-ST-01M3E4R072V5NE73SPQY5GZNHM` |
 | `DAWN-X-01M31BQ4QW0JTNHDJRJNW8WN6F` | `DAWN-ST-01M3E4R072RVFWWHQWAZYR59ZX` |
 | `DAWN-X-01M31BQ4QW5524B0M7CVVDVXV6` | `DAWN-ST-01M3E4R072CEAYSMS6T1AV9MZY` |
 | `DAWN-X-01M31BQ4QWGBRV7PR81SKM6DQZ` | `DAWN-ST-01M3E4R072TTGAGNX0F2DGAQ72` |
@@ -71,10 +71,16 @@ Question and Claim remain, but every seed object received a new ID. Claim field 
 | `DAWN-R-01M31BQ4QWTVZQNF34BDNV5SH4` | `DAWN-REL-01M3E4R072RQNGK0SNJXK7X2PD` |
 | `DAWN-R-01M31BQ4QWXGBA3A2PFFA4M3QC` | `DAWN-REL-01M3E4R072EPCDSJ2DVXWSCFEC` |
 
-The two previous Question-to-Claim `motivates` edges were normalized to Claim-to-Question `answers` Connections. The two Method-to-Question edges use `investigates`; Method-to-Claim edges use `tests`. No historical intellectual provenance was inferred.
+The two previous Question-to-Claim `motivates` edges were normalized to Claim-to-Question `answers` Connections. The two Method-to-Question edges use `investigates`; Method-to-Claim edges use `tests`; the checked evaluator Source `motivates` the reference-checkpoint Question. No historical intellectual provenance was inferred. Execution bookkeeping edges were not retained.
 
 ## Migration outcome
 
-The seed inventory moved from 7 Questions, 4 Claims, 4 Probes, 7 Explorations, 1 Source, and 8 Relations to 7 Questions, 8 Studies, 4 Claims, 4 Methods, 0 Results, 1 Reference, and 8 Connections. The language-behavior plan split into zero-shot and autoregressive-generation Studies because the execution model intentionally permits only one entrypoint Method per Study. No Insight or Evidence seed object existed, and none was synthesized. No Result, Run, supported Claim, interpretation Claim, or accepted Connection was fabricated.
+The verified pre-migration inventory was 7 Questions, 4 Claims, 0 Insights, 4 Probes, 0 Evidence records, 7 Explorations, 1 Source, 8 Relations, and 0 Runs. The final seed inventory is 7 open Questions, 4 proposed Claims, 4 Methods, 7 Studies, 0 Results, 1 Source/Reference, 8 proposed Relations/Connections, 1 Artifact, and 0 Runs.
+
+The legacy language-behavior Exploration maps to one Study containing distinct zero-shot and autoregressive-generation Methods and Method-specific execution plans. Only the zero-shot plan has a supported entrypoint. Studies that lack a sufficiently specified Method retain their missing-capability intent in completion criteria and blockers rather than receiving a fabricated Method or executable plan.
+
+An intermediate bootstrap branch had split language generation into an eighth Study and still used one Study-wide entrypoint. That shape was not retained. The final model separates semantic Study references from `execution.plans`, supports multiple Methods, and fails closed when executable Method selection is ambiguous.
+
+No Insight or Evidence seed object existed, and none was synthesized. No Result, Run, supported Claim, interpretation or definition Claim, accepted Connection, review, or provenance assertion was fabricated.
 
 DAWN-SRW code was not copied or modified. The program still references the separately MIT-licensed repository at commit `30165201e68897d75f0586805d321393159550c3`; this repository remains Apache-2.0 licensed.

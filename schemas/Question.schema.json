@@ -23,7 +23,13 @@
       "type": "string"
     },
     "question": {
+      "minLength": 1,
       "title": "Question",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
       "type": "string"
     },
     "schema_version": {
@@ -32,9 +38,13 @@
       "title": "Schema Version",
       "type": "integer"
     },
+    "scope": {
+      "minLength": 1,
+      "title": "Scope",
+      "type": "string"
+    },
     "status": {
       "enum": [
-        "proposed",
         "open",
         "active",
         "partially_resolved",
@@ -46,6 +56,7 @@
       "type": "string"
     },
     "title": {
+      "minLength": 1,
       "title": "Title",
       "type": "string"
     }
@@ -56,6 +67,8 @@
     "created_at",
     "title",
     "question",
+    "rationale",
+    "scope",
     "status"
   ],
   "title": "Question",

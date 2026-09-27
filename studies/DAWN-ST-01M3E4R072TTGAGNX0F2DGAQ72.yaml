@@ -10,19 +10,14 @@ claim_ids:
 - DAWN-C-01M3E4R071RM1E88PC4DNSRRDE
 - DAWN-C-01M3E4R071ZC8EESMDFX0GHPJT
 method_ids: []
+result_ids: []
+artifact_ids: []
 goal: Compare random and structured or learned organization at the same candidate budget.
 motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
-requires:
-  capabilities:
-  - analysis.operator_organization@1
-  artifacts: []
-profile_ids:
-- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
-entrypoint: null
-expected_outputs: []
 completion_criteria: Specify a Method, obtain required capabilities and review observations.
 known_limitations:
 - No public research Result is established by this Study.
 blockers:
 - Matched candidate-budget protocol and implementation are absent.
-declared_readiness: null
+execution:
+  plans: []

@@ -16,18 +16,19 @@ from .models import (
     Source,
     Study,
 )
-from .resolver import readiness, resolve
+from .resolver import readiness, resolve, select_execution_plan
 from .revision import git_identity
 from .store import validate_catalog
 
 
-VIEW_VERSION = 1
+VIEW_VERSION = 2
 GRAPH_GROUPS = (
     ("questions", Question),
     ("claims", Claim),
     ("methods", Method),
     ("results", Result),
     ("references", Source),
+    ("artifacts", Artifact),
 )
 
 
@@ -67,7 +68,14 @@ def _summary(obj) -> dict:
             }
         )
     elif isinstance(obj, Question):
-        value.update({"status": obj.status, "statement": obj.question})
+        value.update(
+            {
+                "status": obj.status,
+                "statement": obj.question,
+                "rationale": obj.rationale,
+                "scope": obj.scope,
+            }
+        )
     elif isinstance(obj, Method):
         value.update({"status": obj.status, "statement": obj.description})
     elif isinstance(obj, Result):
@@ -101,13 +109,18 @@ def _summary(obj) -> dict:
 
 
 def _study_refs(study: Study) -> set[str]:
-    return set(
+    refs = set(
         study.question_ids
         + study.claim_ids
         + study.method_ids
-        + study.requires.artifacts
-        + study.profile_ids
+        + study.result_ids
+        + study.artifact_ids
     )
+    for plan in study.execution.plans:
+        refs.add(plan.method_id)
+        refs.update(plan.requires.artifacts)
+        refs.update(plan.profile_ids)
+    return refs
 
 
 def _direct_studies(catalog, object_id: str) -> list[Study]:
@@ -122,7 +135,9 @@ def _direct_runs(catalog, focus) -> list[Run]:
     if isinstance(focus, Run):
         run_ids.add(focus.id)
     if isinstance(focus, Result):
-        run_ids.update(focus.run_ids)
+        run_ids.update(
+            item for item in focus.grounding_ids if isinstance(catalog.objects.get(item), Run)
+        )
     for run in catalog.of_type(Run):
         if isinstance(focus, Study) and run.study_id == focus.id:
             run_ids.add(run.id)
@@ -146,9 +161,12 @@ def _related_studies(catalog, focus) -> list[Study]:
 
 def _study_results(catalog, study: Study) -> list[Result]:
     run_ids = {run.id for run in catalog.of_type(Run) if run.study_id == study.id}
-    result_ids = {
-        result.id for result in catalog.of_type(Result) if run_ids.intersection(result.run_ids)
-    }
+    result_ids = set(study.result_ids)
+    result_ids.update(
+        result.id
+        for result in catalog.of_type(Result)
+        if run_ids.intersection(result.grounding_ids)
+    )
     research_ids = set(study.question_ids + study.claim_ids + study.method_ids)
     for relation in catalog.of_type(Relation):
         if relation.source_id in research_ids and isinstance(catalog.objects.get(relation.target_id), Result):
@@ -180,22 +198,39 @@ def _compact_unchecked(catalog, object_id: str) -> dict:
         state, blockers = readiness(catalog, focus)
         runs = _direct_runs(catalog, focus)
         latest = max(runs, key=lambda run: (run.started_at, run.id)) if runs else None
+        profile_ids = sorted(
+            {profile_id for plan in focus.execution.plans for profile_id in plan.profile_ids}
+        )
+        expected_outputs = sorted(
+            {item for plan in focus.execution.plans for item in plan.expected_outputs}
+        )
         output.update(
             {
                 "state": {"lifecycle": focus.lifecycle, "readiness": state},
                 "what_are_we_studying": focus.goal,
+                "why": focus.motivation,
                 "questions": [_summary(catalog.get(item, Question)) for item in sorted(focus.question_ids)],
                 "claims": [_summary(catalog.get(item, Claim)) for item in sorted(focus.claim_ids)],
                 "methods": [_summary(catalog.get(item, Method)) for item in sorted(focus.method_ids)],
                 "results": [_summary(item) for item in _study_results(catalog, focus)],
+                "artifacts": [
+                    _summary(catalog.get(item, Artifact)) for item in sorted(focus.artifact_ids)
+                ],
                 "latest_run": _summary(latest) if latest else None,
                 "blockers": list(blockers),
                 "next": {
-                    "expected_outputs": list(focus.expected_outputs),
+                    "expected_outputs": expected_outputs,
                     "completion_criteria": focus.completion_criteria,
                 },
                 "profiles": [
-                    _summary(catalog.get(item, ResourceProfile)) for item in sorted(focus.profile_ids)
+                    _summary(catalog.get(item, ResourceProfile)) for item in profile_ids
+                ],
+                "execution_methods": [
+                    {
+                        "method": _summary(catalog.get(plan.method_id, Method)),
+                        "entrypoint": plan.entrypoint,
+                    }
+                    for plan in sorted(focus.execution.plans, key=lambda item: item.method_id)
                 ],
             }
         )
@@ -233,7 +268,13 @@ def _research_unchecked(catalog, object_id: str, export_safe: bool = False) -> d
 
     if isinstance(focus, Study):
         study_ids.add(focus.id)
-        selected_ids.update(focus.question_ids + focus.claim_ids + focus.method_ids)
+        selected_ids.update(
+            focus.question_ids
+            + focus.claim_ids
+            + focus.method_ids
+            + focus.result_ids
+            + focus.artifact_ids
+        )
         selected_ids.update(item.id for item in _study_results(catalog, focus))
         run_ids.update(run.id for run in catalog.of_type(Run) if run.study_id == focus.id)
     elif isinstance(focus, Relation):
@@ -254,17 +295,22 @@ def _research_unchecked(catalog, object_id: str, export_safe: bool = False) -> d
             connection_ids.add(relation.id)
             selected_ids.update((relation.source_id, relation.target_id))
 
-    provenance_source_ids = set()
+    grounding_ids = set()
     for selected_id in sorted(selected_ids):
         selected = catalog.get(selected_id)
         if isinstance(selected, Result):
-            run_ids.update(selected.run_ids)
-            provenance_source_ids.update(selected.source_ids)
-    selected_ids.update(provenance_source_ids)
+            for grounding_id in selected.grounding_ids:
+                if isinstance(catalog.objects.get(grounding_id), Run):
+                    run_ids.add(grounding_id)
+                else:
+                    grounding_ids.add(grounding_id)
+    selected_ids.update(grounding_ids)
 
     for run_id in sorted(run_ids):
         run = catalog.get(run_id, Run)
         selected_ids.add(run.method_id)
+        selected_ids.update(item.artifact_id for item in run.input_artifacts)
+        selected_ids.update(run.produced_artifact_ids)
         study_ids.add(run.study_id)
 
     groups = {name: [] for name, _ in GRAPH_GROUPS}
@@ -317,45 +363,110 @@ def _research_unchecked(catalog, object_id: str, export_safe: bool = False) -> d
     }
 
 
-def _execution_unchecked(catalog, object_id: str, profile: str | None = None) -> dict:
+def _execution_unchecked(
+    catalog,
+    object_id: str,
+    profile: str | None = None,
+    method: str | None = None,
+) -> dict:
     focus = catalog.get(object_id)
     output = {"dor_view_version": VIEW_VERSION, "mode": "execution", "focus": _summary(focus)}
     if not isinstance(focus, Study):
-        if profile:
-            raise ValueError("--profile requires a Study focus")
+        if profile or method:
+            raise ValueError("--profile and --method require a Study focus")
         output.update({"applicable": False, "reason": "execution view is available only for Studies"})
         return output
 
-    profile_keys = [profile] if profile else sorted(focus.profile_ids)
-    plans = [resolve(catalog, focus.id, key) for key in profile_keys]
+    selected_plans = (
+        [select_execution_plan(focus, method)]
+        if method
+        else sorted(focus.execution.plans, key=lambda item: item.method_id)
+    )
+    selected_profile = None
+    if profile:
+        matches = [
+            item
+            for item in catalog.of_type(ResourceProfile)
+            if item.id == profile or item.name == profile
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"unknown or ambiguous profile: {profile}")
+        selected_profile = matches[0]
+        selected_plans = [
+            plan for plan in selected_plans if selected_profile.id in plan.profile_ids
+        ]
+        if not selected_plans:
+            raise ValueError(
+                f"profile {selected_profile.name} is not configured for the selected Study Method(s)"
+            )
+
+    resolutions = []
     missing = []
-    if not profile_keys:
-        missing.append("Study has no configured profile")
-        if not focus.entrypoint:
-            missing.append("Study has no entrypoint")
-        if not focus.entrypoint_method_id:
-            missing.append("Study has no executable Method")
+    for execution_plan in selected_plans:
+        profile_keys = (
+            [selected_profile.id]
+            if selected_profile
+            else sorted(execution_plan.profile_ids)
+        )
+        if not profile_keys:
+            missing.append(
+                f"Method {execution_plan.method_id} has no configured resource profile"
+            )
+            missing.extend(execution_plan.blockers)
+            continue
+        for profile_key in profile_keys:
+            resolutions.append(
+                resolve(
+                    catalog,
+                    focus.id,
+                    profile_key,
+                    method_id=execution_plan.method_id,
+                )
+            )
+    if not selected_plans:
+        missing.append("Study has no execution plans")
     blockers = sorted(
-        set(focus.blockers + missing + [item for plan in plans for item in plan["blockers"]])
+        set(
+            focus.blockers
+            + missing
+            + [item for plan in resolutions for item in plan["blockers"]]
+        )
+    )
+    profile_ids = sorted(
+        {profile_id for plan in selected_plans for profile_id in plan.profile_ids}
     )
     output.update(
         {
             "applicable": True,
             "study": {"id": focus.id, "title": focus.title, "lifecycle": focus.lifecycle},
-            "required_capabilities": sorted(set(focus.requires.capabilities)),
-            "required_artifacts": list(focus.requires.artifacts),
-            "entrypoint": focus.entrypoint,
-            "executable_method": _summary(catalog.get(focus.entrypoint_method_id, Method))
-            if focus.entrypoint_method_id
-            else None,
-            "configured_profiles": [
-                _summary(catalog.get(item, ResourceProfile)) for item in sorted(focus.profile_ids)
+            "selected_methods": [
+                _summary(catalog.get(plan.method_id, Method)) for plan in selected_plans
             ],
-            "resolutions": plans,
+            "execution_plans": [plan.model_dump(mode="json") for plan in selected_plans],
+            "required_capabilities": sorted(
+                {
+                    capability
+                    for plan in selected_plans
+                    for capability in plan.requires.capabilities
+                }
+            ),
+            "required_artifacts": sorted(
+                {
+                    artifact_id
+                    for plan in selected_plans
+                    for artifact_id in plan.requires.artifacts
+                }
+            ),
+            "configured_profiles": [
+                _summary(catalog.get(item, ResourceProfile)) for item in profile_ids
+            ],
+            "resolutions": resolutions,
             "declared_blockers": list(focus.blockers),
             "blockers": blockers,
-            "ready": any(plan["ready"] for plan in plans),
-            "publicly_reproducible": any(plan["publicly_reproducible"] for plan in plans),
+            "ready": any(plan["ready"] for plan in resolutions),
+            "publicly_reproducible": any(
+                plan["publicly_reproducible"] for plan in resolutions
+            ),
         }
     )
     return output
@@ -395,20 +506,26 @@ def _export_record(obj) -> dict:
     return _redact_paths(data)
 
 
-def build_view(catalog, object_id: str, mode: str = "compact", profile: str | None = None) -> dict:
+def build_view(
+    catalog,
+    object_id: str,
+    mode: str = "compact",
+    profile: str | None = None,
+    method: str | None = None,
+) -> dict:
     """Build a purpose-specific projection from canonical state only."""
 
     _ensure_valid(catalog)
     if mode == "compact":
-        if profile:
-            raise ValueError("--profile is valid only with --mode execution")
+        if profile or method:
+            raise ValueError("--profile and --method are valid only with --mode execution")
         return _compact_unchecked(catalog, object_id)
     if mode == "research":
-        if profile:
-            raise ValueError("--profile is valid only with --mode execution")
+        if profile or method:
+            raise ValueError("--profile and --method are valid only with --mode execution")
         return _research_unchecked(catalog, object_id)
     if mode == "execution":
-        return _execution_unchecked(catalog, object_id, profile)
+        return _execution_unchecked(catalog, object_id, profile, method)
     raise ValueError(f"unknown view mode: {mode}")
 
 

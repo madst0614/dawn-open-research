@@ -4,7 +4,8 @@
     "claim_type": {
       "enum": [
         "proposition",
-        "interpretation"
+        "interpretation",
+        "definition"
       ],
       "title": "Claim Type",
       "type": "string"
@@ -42,6 +43,7 @@
       "type": "string"
     },
     "statement": {
+      "minLength": 1,
       "title": "Statement",
       "type": "string"
     },
@@ -60,6 +62,7 @@
       "type": "string"
     },
     "title": {
+      "minLength": 1,
       "title": "Title",
       "type": "string"
     }

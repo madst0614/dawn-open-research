@@ -4,4 +4,6 @@ created_by: github:madst0614
 created_at: '2026-09-26T05:59:34+00:00'
 title: Physical sparse execution
 question: Can logical locality yield realized physical execution savings without material quality loss?
-status: proposed
+rationale: Logical restriction alone does not establish reduced computation, memory traffic or wall-clock cost; realized savings and their quality tradeoffs remain unknown.
+scope: Matched DAWN-SRW evaluations that compare physical cost and language-model quality under local or sparse execution.
+status: open

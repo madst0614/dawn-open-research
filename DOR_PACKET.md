@@ -2,7 +2,7 @@
 
 A DOR Packet carries a research idea from a free-form conversation into DAWN Open Research without requiring the recipient to see the original conversation. It is a rich, self-contained private handoff: enough context to search the graph, resolve overlap, prepare a Study, and state what is runnable or blocked.
 
-A Packet is deliberately not canonical DAWN state. It is not a Question, Study, Claim, Method, Result, Connection, Reference, Run, or infrastructure record. There is no Packet parser, Python model, JSON Schema, or `dawn ingest` command. Codex performs reviewable canonicalization using [AGENTS.md](AGENTS.md).
+A Packet is deliberately not canonical DAWN state. It is not a Question, Study, Claim, Method, Result, Connection, Reference, Artifact, Run, or infrastructure record. There is no Packet parser, Python model, JSON Schema, or `dawn ingest` command. Codex performs reviewable canonicalization using [AGENTS.md](AGENTS.md).
 
 ## Privacy boundary
 
@@ -17,6 +17,7 @@ A useful Packet keeps distinctions that matter during canonicalization:
 - unresolved questions;
 - candidate propositions;
 - reusable interpretations;
+- candidate definitions;
 - experimental or analytical ideas;
 - alternative explanations;
 - predicted outcomes;
@@ -26,7 +27,7 @@ A useful Packet keeps distinctions that matter during canonicalization:
 - scope, assumptions, uncertainty, constraints, and decisions already made; and
 - reviewable completion criteria.
 
-These entries are proposals or context. A candidate proposition is not a finding. An interpretation is not automatically canonical. An experimental idea becomes a Method only when its protocol is adequately specified. A predicted outcome is not a Result. An actual observation becomes a Result only with verified Run or Reference provenance, explicit scope, and limitations. A conversation is never a Reference.
+These entries are proposals or context. A candidate proposition is not a finding. An interpretation or definition is not automatically canonical. An experimental idea becomes a Method only when its protocol is adequately specified. A predicted outcome is not a Result. An actual observation or derivation becomes a Result only with verified Run, Reference, or Artifact grounding, explicit scope, authorship, and limitations. A conversation is never a Reference.
 
 Use `null`, `unknown`, or an explicit unresolved item instead of inventing missing facts. Name a canonical ID only when it was actually verified.
 
@@ -59,6 +60,7 @@ research:
       limitations: "Why it is not yet a general Result."
   open_questions:
     - question: "A concrete unresolved knowledge target."
+      rationale: "Why this uncertainty is worth structuring as a Question."
       scope: "Its intended boundary."
   candidate_propositions:
     - statement: "A falsifiable proposed proposition."
@@ -68,6 +70,9 @@ research:
     - statement: "A reusable interpretation or synthesis."
       scope: "Where the interpretation is intended to apply."
       alternatives: []
+  definitions:
+    - statement: "A candidate formally introduced concept or object."
+      scope: "Where the definition is intended to apply."
   experimental_ideas:
     - title: "Potential Method"
       description: "What kind of investigation this is."
@@ -89,16 +94,17 @@ study:
   question_search_terms: []
   claim_search_terms: []
   method_search_terms: []
-  requirements:
-    capabilities: []
-    artifacts: []
-    environment: []
-    compute: []
   execution_context:
     implementation_refs: []
     data_refs: []
     profile_preferences: []
-  expected_outputs: []
+    possible_plans:
+      - method: "The Method this plan would execute, or unresolved."
+        capabilities: []
+        artifacts: []
+        environment: []
+        compute: []
+        expected_outputs: []
   completion_criteria: "How another researcher can judge completion."
   known_limitations: []
   blockers: []
@@ -118,14 +124,15 @@ Codex maps Packet material conservatively:
 ```text
 candidate proposition            -> Claim with proposition type
 reusable interpretation          -> Claim with interpretation type
+candidate formal definition      -> Claim with definition type
 specified research procedure     -> Method
-actual outcome with provenance   -> Result
+actual grounded outcome          -> Result
 bounded body of work             -> Study
 external information             -> Reference, after locator verification
 reviewable bearing or origin     -> proposed Connection
 ```
 
-Predicted or hypothetical outcomes do not map to Results. Similarity or chronology does not establish intellectual provenance. A Packet's authorship does not establish authorship of every idea it contains.
+Predicted or hypothetical outcomes do not map to Results. Result grounding must resolve to a Run, Reference, or Artifact. Similarity or chronology does not establish intellectual provenance. A Packet's authorship does not establish authorship of every idea it contains.
 
 ## Intake trace
 
@@ -187,9 +194,9 @@ Turn this into a DOR Packet for DAWN Open Research.
 
 The recipient will not receive our conversation. Produce a self-contained private-local handoff that restates the context, reasoning, decisions, constraints, and unresolved questions needed to continue.
 
-Keep separate: known observations and their bases; open questions; candidate propositions; reusable interpretations; experimental or analytical ideas; alternative explanations; predicted outcomes; failure modes; references; execution context; requirements; limitations; and completion criteria.
+Keep separate: known observations and their bases; open questions and their rationale; candidate propositions; reusable interpretations; candidate definitions; experimental or analytical ideas; alternative explanations; predicted outcomes; failure modes; references; execution context; requirements; limitations; and completion criteria.
 
-Do not treat a candidate proposition, interpretation, prediction, or conversational report as a finding. Do not call anything a Result without actual Run or checked Reference provenance. Do not turn the conversation into a Reference. Do not invent citations, DAWN IDs, provenance, outcomes, implementation revisions, artifact availability, infrastructure readiness, or author identity.
+Do not treat a candidate proposition, interpretation, definition, prediction, or conversational report as a finding. Do not call anything a Result without actual Run, checked Reference, or inspectable Artifact grounding. Do not turn the conversation into a Reference. Do not invent citations, DAWN IDs, provenance, outcomes, implementation revisions, artifact availability, infrastructure readiness, or author identity.
 
 Exclude secrets, credentials, private keys, restricted data, private URLs, personal machine paths, and irrelevant personal information. Use null, unknown, or unresolved_ambiguities for missing facts. Use only canonical IDs that were explicitly verified in the conversation.
 

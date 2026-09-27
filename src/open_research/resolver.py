@@ -1,9 +1,18 @@
-"""Conservative, deterministic capability and artifact resolution."""
+"""Conservative, deterministic Method-specific execution resolution."""
 
 from hashlib import sha256
 from pathlib import Path
 
-from .models import Artifact, Environment, InfrastructureProvider, RepositoryRef, ResourceProfile, Run, Study
+from .models import (
+    Artifact,
+    Environment,
+    ExecutionPlan,
+    InfrastructureProvider,
+    RepositoryRef,
+    ResourceProfile,
+    Run,
+    Study,
+)
 
 
 RANK = {"validated": 0, "available": 1, "experimental": 2}
@@ -32,7 +41,10 @@ def _provider_usable(catalog, provider: InfrastructureProvider) -> bool:
         return any(
             isinstance(catalog.objects.get(run_id), Run)
             and catalog.objects[run_id].status == "completed"
-            and any(frozen.provider_id == provider.id for frozen in catalog.objects[run_id].implementations)
+            and any(
+                frozen.provider_id == provider.id
+                for frozen in catalog.objects[run_id].implementations
+            )
             for run_id in provider.verification_run_ids
         )
     return True
@@ -46,13 +58,39 @@ def _quality(providers: dict[str, InfrastructureProvider], environment: Environm
     )
 
 
+def select_execution_plan(study: Study, method_id: str | None = None) -> ExecutionPlan:
+    """Select one execution plan, failing closed when Method choice is ambiguous."""
+
+    if method_id is not None:
+        matches = [plan for plan in study.execution.plans if plan.method_id == method_id]
+        if len(matches) != 1:
+            if method_id not in study.method_ids:
+                raise ValueError(f"Method {method_id} is not part of Study {study.id}")
+            raise ValueError(f"Method {method_id} has no execution plan in Study {study.id}")
+        return matches[0]
+
+    executable = [plan for plan in study.execution.plans if plan.entrypoint]
+    if not executable:
+        raise ValueError(
+            f"Study {study.id} has no executable Method; pass --method to inspect a planned Method"
+        )
+    if len(executable) > 1:
+        choices = sorted(plan.method_id for plan in executable)
+        raise ValueError(
+            f"Study {study.id} has ambiguous executable Methods {choices}; pass --method"
+        )
+    return executable[0]
+
+
 def resolve(
     catalog,
     study_id: str,
     profile_key: str,
     artifact_paths: dict[str, Path] | None = None,
+    method_id: str | None = None,
 ) -> dict:
     study = catalog.get(study_id, Study)
+    execution_plan = select_execution_plan(study, method_id)
     profiles = [
         profile
         for profile in catalog.of_type(ResourceProfile)
@@ -61,14 +99,21 @@ def resolve(
     if len(profiles) != 1:
         raise ValueError(f"unknown or ambiguous profile: {profile_key}")
     profile = profiles[0]
-    if study.profile_ids and profile.id not in study.profile_ids:
-        raise ValueError(f"profile {profile.name} is not supported by {study.id}")
-    artifact_paths = artifact_paths or {}
-    unknown_artifacts = set(artifact_paths) - set(study.requires.artifacts)
-    if unknown_artifacts:
-        raise ValueError(f"artifact paths not required by Study: {sorted(unknown_artifacts)}")
+    if profile.id not in execution_plan.profile_ids:
+        raise ValueError(
+            f"profile {profile.name} is not supported by Method {execution_plan.method_id} "
+            f"in Study {study.id}"
+        )
 
-    capabilities = sorted(set(study.requires.capabilities))
+    artifact_paths = artifact_paths or {}
+    required_artifacts = execution_plan.requires.artifacts
+    unknown_artifacts = set(artifact_paths) - set(required_artifacts)
+    if unknown_artifacts:
+        raise ValueError(
+            f"artifact paths not required by the selected Study Method: {sorted(unknown_artifacts)}"
+        )
+
+    capabilities = sorted(set(execution_plan.requires.capabilities))
     candidates = []
     for environment_id in sorted(profile.environment_ids):
         environment = catalog.objects.get(environment_id)
@@ -86,14 +131,18 @@ def resolve(
                 and _provider_usable(catalog, provider)
             ]
             if providers:
-                selected[capability] = min(providers, key=lambda item: (RANK[item.status], item.id))
+                selected[capability] = min(
+                    providers, key=lambda item: (RANK[item.status], item.id)
+                )
             else:
                 missing.append(capability)
         candidates.append((environment, selected, missing, _lock_problem(catalog, environment)))
 
     viable = [candidate for candidate in candidates if not candidate[2] and not candidate[3]]
     if viable:
-        environment, selected, missing, lock_problem = min(viable, key=lambda item: _quality(item[1], item[0]))
+        environment, selected, missing, lock_problem = min(
+            viable, key=lambda item: _quality(item[1], item[0])
+        )
     elif candidates:
         environment, selected, missing, lock_problem = min(
             candidates,
@@ -107,13 +156,16 @@ def resolve(
             "no compatible environment for profile",
         )
 
-    fundamental_blockers = [f"missing compatible capability: {capability}" for capability in missing]
+    fundamental_blockers = [
+        f"missing compatible capability: {capability}" for capability in missing
+    ]
     if lock_problem:
         fundamental_blockers.append(lock_problem)
-    if not study.entrypoint:
-        fundamental_blockers.append("Study has no entrypoint")
-    if not study.entrypoint_method_id:
-        fundamental_blockers.append("Study has no executable Method")
+    if not execution_plan.entrypoint:
+        fundamental_blockers.append(
+            f"Method {execution_plan.method_id} has no execution entrypoint"
+        )
+    fundamental_blockers.extend(execution_plan.blockers)
 
     warnings = []
     if profile.status == "experimental":
@@ -125,7 +177,7 @@ def resolve(
     artifacts = []
     local_blockers = []
     public_artifacts = True
-    for artifact_id in study.requires.artifacts:
+    for artifact_id in required_artifacts:
         artifact = catalog.objects.get(artifact_id)
         if not isinstance(artifact, Artifact):
             local_blockers.append(f"missing artifact: {artifact_id}")
@@ -150,11 +202,20 @@ def resolve(
             artifacts.append({"id": artifact_id, "availability": "local", "digest": digest})
         elif is_public:
             artifacts.append(
-                {"id": artifact_id, "availability": "public", "digest": artifact.digest, "uri": artifact.uri}
+                {
+                    "id": artifact_id,
+                    "availability": "public",
+                    "digest": artifact.digest,
+                    "uri": artifact.uri,
+                }
             )
-            local_blockers.append(f"artifact {artifact_id} needs a local path; remote retrieval is not implemented")
+            local_blockers.append(
+                f"artifact {artifact_id} needs a local path; remote retrieval is not implemented"
+            )
         else:
-            local_blockers.append(f"artifact {artifact_id} is {artifact.availability} or has no digest")
+            local_blockers.append(
+                f"artifact {artifact_id} is {artifact.availability} or has no digest"
+            )
             artifacts.append({"id": artifact_id, "availability": artifact.availability})
 
     provider_repositories_public = all(
@@ -174,7 +235,13 @@ def resolve(
     blockers = sorted(set(fundamental_blockers + local_blockers))
     return {
         "study_id": study.id,
+        "method_id": execution_plan.method_id,
+        "entrypoint": execution_plan.entrypoint,
         "profile_id": profile.id,
+        "required_capabilities": capabilities,
+        "required_artifacts": list(required_artifacts),
+        "expected_outputs": list(execution_plan.expected_outputs),
+        "declared_readiness": execution_plan.declared_readiness,
         "environment_id": environment.id if environment else None,
         "environment_lock_digest": environment.lock_digest if environment else None,
         "providers": [
@@ -199,15 +266,38 @@ def resolve(
 def readiness(catalog, study: Study) -> tuple[str, list[str]]:
     if study.lifecycle in {"completed", "superseded"}:
         return study.lifecycle, []
-    if not study.profile_ids or not study.entrypoint_method_id or not study.entrypoint:
+    if not study.execution.plans:
         state = "blocked" if study.lifecycle == "blocked" else "draft"
         return state, list(study.blockers)
-    try:
-        plans = [resolve(catalog, study.id, profile) for profile in study.profile_ids]
-    except ValueError as exc:
-        return "blocked", [str(exc)]
-    if any(plan["publicly_reproducible"] for plan in plans):
+
+    resolutions = []
+    problems = list(study.blockers)
+    for execution_plan in study.execution.plans:
+        if not execution_plan.profile_ids:
+            problems.append(
+                f"Method {execution_plan.method_id} has no configured resource profile"
+            )
+            problems.extend(execution_plan.blockers)
+            continue
+        for profile_id in execution_plan.profile_ids:
+            try:
+                resolutions.append(
+                    resolve(
+                        catalog,
+                        study.id,
+                        profile_id,
+                        method_id=execution_plan.method_id,
+                    )
+                )
+            except ValueError as exc:
+                problems.append(str(exc))
+
+    if any(plan["publicly_reproducible"] for plan in resolutions):
         return "public", []
-    if any(plan["ready"] for plan in plans):
+    if any(plan["ready"] for plan in resolutions):
         return "local", []
-    return "blocked", sorted(set(study.blockers + [item for plan in plans for item in plan["blockers"]]))
+    problems.extend(item for plan in resolutions for item in plan["blockers"])
+    explicitly_blocked = study.lifecycle == "blocked" or any(
+        plan.declared_readiness == "blocked" for plan in study.execution.plans
+    )
+    return ("blocked" if explicitly_blocked else "draft"), sorted(set(problems))

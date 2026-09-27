@@ -1,10 +1,17 @@
-"""Strict v1 manifests. Cross-object constraints live in store.py."""
+"""Strict research-grammar v1 manifests.
+
+Object-local shape constraints live here. Cross-object and repository constraints
+live in :mod:`open_research.store`.
+"""
 
 from datetime import datetime
 import re
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator, model_validator
+
+
+NonEmptyStr = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
 class StrictModel(BaseModel):
@@ -15,14 +22,14 @@ class Program(StrictModel):
     id: str
     namespace: str = Field(pattern=r"^[A-Z][A-Z0-9]{1,15}$")
     schema_version: Literal[1]
-    title: str
-    mission: str
-    repository: str
+    title: NonEmptyStr
+    mission: NonEmptyStr
+    repository: NonEmptyStr
     views: list[str]
-    id_scheme: str
-    review_policy: str
+    id_scheme: NonEmptyStr
+    review_policy: NonEmptyStr
     default_baseline_id: str | None = None
-    citation_convention: str
+    citation_convention: NonEmptyStr
 
 
 class Record(StrictModel):
@@ -41,63 +48,58 @@ class Record(StrictModel):
 
 
 class Question(Record):
-    title: str
-    question: str
+    title: NonEmptyStr
+    question: NonEmptyStr
+    rationale: NonEmptyStr
+    scope: NonEmptyStr
     status: Literal[
-        "proposed", "open", "active", "partially_resolved", "resolved", "blocked", "superseded"
+        "open", "active", "partially_resolved", "resolved", "blocked", "superseded"
     ]
 
 
 class Claim(Record):
-    title: str
-    statement: str
-    claim_type: Literal["proposition", "interpretation"]
-    scope: str = Field(min_length=1)
+    title: NonEmptyStr
+    statement: NonEmptyStr
+    claim_type: Literal["proposition", "interpretation", "definition"]
+    scope: NonEmptyStr
     status: Literal[
         "proposed", "tentative", "supported", "robust", "disputed", "limited", "contradicted", "superseded"
     ]
 
 
 class Method(Record):
-    title: str
-    description: str
-    protocol: str
+    title: NonEmptyStr
+    description: NonEmptyStr
+    protocol: NonEmptyStr
     status: Literal["proposed", "specified", "validated", "deprecated"]
 
 
 class Result(Record):
-    title: str
-    statement: str
-    scope: str = Field(min_length=1)
-    limitations: str = Field(min_length=1)
-    run_ids: list[str] = Field(default_factory=list)
-    source_ids: list[str] = Field(default_factory=list)
-    authors: list[str]
+    title: NonEmptyStr
+    statement: NonEmptyStr
+    scope: NonEmptyStr
+    limitations: NonEmptyStr
+    grounding_ids: list[str] = Field(min_length=1)
+    authors: list[str] = Field(min_length=1)
     reviewers: list[str] = Field(default_factory=list)
-
-    @model_validator(mode="after")
-    def require_provenance(self):
-        if not (self.run_ids or self.source_ids):
-            raise ValueError("Result requires a Run or Source")
-        return self
 
 
 class Source(Record):
-    title: str
+    title: NonEmptyStr
     source_type: Literal["paper", "book", "dataset", "repository", "documentation", "benchmark", "other"]
-    uri: str
-    source_statement: str
+    uri: NonEmptyStr
+    source_statement: NonEmptyStr
 
 
 class Relation(Record):
     source_id: str
     target_id: str
     relation_class: Literal["semantic", "provenance"]
-    relation_type: str
+    relation_type: NonEmptyStr
     status: Literal["proposed", "accepted", "disputed", "rejected", "superseded"]
-    asserted_by: str
+    asserted_by: NonEmptyStr
     asserted_at: datetime
-    rationale: str = Field(min_length=1)
+    rationale: NonEmptyStr
     reviewers: list[str] = Field(default_factory=list)
     review_notes: str | None = None
 
@@ -113,30 +115,45 @@ class Requirements(StrictModel):
     artifacts: list[str] = Field(default_factory=list)
 
 
-class Study(Record):
-    title: str
-    lifecycle: Literal["draft", "planned", "active", "completed", "blocked", "superseded"]
-    question_ids: list[str] = Field(default_factory=list)
-    claim_ids: list[str] = Field(default_factory=list)
-    method_ids: list[str] = Field(default_factory=list)
-    goal: str
-    motivation: str
+class ExecutionPlan(StrictModel):
+    """Method-specific execution configuration embedded in a Study."""
+
+    method_id: str
+    entrypoint: NonEmptyStr | None = None
     requires: Requirements = Field(default_factory=Requirements)
     profile_ids: list[str] = Field(default_factory=list)
-    entrypoint: str | None = None
-    entrypoint_method_id: str | None = None
     expected_outputs: list[str] = Field(default_factory=list)
-    completion_criteria: str
-    known_limitations: list[str] = Field(default_factory=list)
     blockers: list[str] = Field(default_factory=list)
     declared_readiness: Literal["draft", "local", "public", "blocked"] | None = None
 
+
+class StudyExecution(StrictModel):
+    plans: list[ExecutionPlan] = Field(default_factory=list)
+
+
+class Study(Record):
+    title: NonEmptyStr
+    lifecycle: Literal["draft", "planned", "active", "completed", "blocked", "superseded"]
+    goal: NonEmptyStr
+    motivation: NonEmptyStr
+    question_ids: list[str] = Field(default_factory=list)
+    claim_ids: list[str] = Field(default_factory=list)
+    method_ids: list[str] = Field(default_factory=list)
+    result_ids: list[str] = Field(default_factory=list)
+    artifact_ids: list[str] = Field(default_factory=list)
+    completion_criteria: NonEmptyStr
+    known_limitations: list[str] = Field(default_factory=list)
+    blockers: list[str] = Field(default_factory=list)
+    execution: StudyExecution = Field(default_factory=StudyExecution)
+
     @model_validator(mode="after")
-    def executable_method_is_explicit(self):
-        if self.entrypoint and self.entrypoint_method_id not in self.method_ids:
-            raise ValueError("entrypoint_method_id must name a Method in method_ids")
-        if self.entrypoint_method_id and not self.entrypoint:
-            raise ValueError("entrypoint_method_id requires an entrypoint")
+    def execution_methods_are_explicit(self):
+        plan_methods = [plan.method_id for plan in self.execution.plans]
+        if len(plan_methods) != len(set(plan_methods)):
+            raise ValueError("Study execution plans must have unique method_id values")
+        missing = sorted(set(plan_methods) - set(self.method_ids))
+        if missing:
+            raise ValueError(f"execution plan Methods must be listed in method_ids: {missing}")
         return self
 
 

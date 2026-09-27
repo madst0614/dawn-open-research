@@ -19,6 +19,7 @@
       "type": "string"
     },
     "description": {
+      "minLength": 1,
       "title": "Description",
       "type": "string"
     },
@@ -27,6 +28,7 @@
       "type": "string"
     },
     "protocol": {
+      "minLength": 1,
       "title": "Protocol",
       "type": "string"
     },
@@ -47,6 +49,7 @@
       "type": "string"
     },
     "title": {
+      "minLength": 1,
       "title": "Title",
       "type": "string"
     }

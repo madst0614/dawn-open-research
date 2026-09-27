@@ -12,19 +12,38 @@ claim_ids:
 method_ids:
 - DAWN-M-01M3E4R071TGX9GWPN7Z4ZQMB1
 - DAWN-M-01M3E4R071WX2RN3HQT6J7KE01
+result_ids: []
+artifact_ids: []
 goal: Compare restricted versus broad operator visibility while separating post-hoc intervention from training under restriction.
 motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
-requires:
-  capabilities:
-  - analysis.operator_visibility@1
-  artifacts: []
-profile_ids:
-- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
-entrypoint: null
-expected_outputs: []
 completion_criteria: Specify an executable Method, obtain required capabilities and review observations.
 known_limitations:
 - No public research Result is established by this Study.
 blockers:
 - Visibility control and matched training/evaluation support are unverified.
-declared_readiness: null
+execution:
+  plans:
+  - method_id: DAWN-M-01M3E4R071TGX9GWPN7Z4ZQMB1
+    entrypoint: null
+    requires:
+      capabilities:
+      - analysis.operator_visibility@1
+      artifacts: []
+    profile_ids:
+    - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+    expected_outputs: []
+    blockers:
+    - A post-hoc visibility execution adapter is not registered.
+    declared_readiness: draft
+  - method_id: DAWN-M-01M3E4R071WX2RN3HQT6J7KE01
+    entrypoint: null
+    requires:
+      capabilities:
+      - analysis.operator_visibility@1
+      artifacts: []
+    profile_ids:
+    - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+    expected_outputs: []
+    blockers:
+    - Matched restricted-visibility training support is not registered.
+    declared_readiness: draft

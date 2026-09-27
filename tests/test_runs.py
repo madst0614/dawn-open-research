@@ -17,8 +17,24 @@ PINNED = "30165201e68897d75f0586805d321393159550c3"
 
 def prepared(research_tree, tmp_path, monkeypatch, returncode=0):
     catalog = load_catalog(research_tree)
-    study = next(obj for obj in catalog.of_type(Study) if obj.entrypoint)
-    environment_path = catalog.paths[catalog.get(study.profile_ids[0]).environment_ids[0]]
+    study = next(
+        obj
+        for obj in catalog.of_type(Study)
+        if any(plan.entrypoint for plan in obj.execution.plans)
+    )
+    study_path = catalog.paths[study.id]
+    study_value = read_yaml(study_path)
+    selected_index = next(
+        index
+        for index, plan in enumerate(study_value["execution"]["plans"])
+        if plan["entrypoint"]
+    )
+    study_value["execution"]["plans"][selected_index]["blockers"] = []
+    write_yaml(study_path, study_value)
+    catalog = load_catalog(research_tree)
+    study = catalog.get(study.id, Study)
+    selected = next(plan for plan in study.execution.plans if plan.entrypoint)
+    environment_path = catalog.paths[catalog.get(selected.profile_ids[0]).environment_ids[0]]
     environment = read_yaml(environment_path)
     lock = research_tree / "test.lock"
     lock.write_bytes(b"pinned fixture dependencies")
@@ -30,7 +46,7 @@ def prepared(research_tree, tmp_path, monkeypatch, returncode=0):
     checkpoint = tmp_path / "checkpoint"
     checkpoint.mkdir()
     (checkpoint / "data").write_bytes(b"tiny fixture, not a model checkpoint")
-    artifact_id = study.requires.artifacts[0]
+    artifact_id = selected.requires.artifacts[0]
     artifact_paths = {artifact_id: checkpoint}
     implementation = tmp_path / "implementation"
     implementation.mkdir()
@@ -52,29 +68,38 @@ def prepared(research_tree, tmp_path, monkeypatch, returncode=0):
         return SimpleNamespace(returncode=returncode)
 
     monkeypatch.setattr(runner.subprocess, "run", fake_evaluator)
-    return catalog, study, implementation, artifact_paths
+    return catalog, study, selected, implementation, artifact_paths
 
 
 def test_manifest_generation_without_automatic_result(research_tree, tmp_path, monkeypatch):
-    catalog, study, implementation, artifacts = prepared(research_tree, tmp_path, monkeypatch)
+    catalog, study, selected, implementation, artifacts = prepared(
+        research_tree, tmp_path, monkeypatch
+    )
     study.method_ids.reverse()
-    plan = resolve(catalog, study.id, study.profile_ids[0], artifacts)
+    plan = resolve(
+        catalog,
+        study.id,
+        selected.profile_ids[0],
+        artifacts,
+        method_id=selected.method_id,
+    )
     assert plan["ready"]
     run = runner.execute(
         catalog,
         study.id,
-        study.profile_ids[0],
+        selected.profile_ids[0],
         implementation,
         artifacts,
         "github:test",
         32,
+        method_id=selected.method_id,
     )
     assert run.status == "completed"
     manifest = research_tree / "runs" / run.id / "manifest.yaml"
     stored = Run.model_validate(yaml.safe_load(manifest.read_text(encoding="utf-8")))
     assert stored.input_artifacts[0].digest.startswith("sha256:")
     assert stored.implementations[0].revision == PINNED
-    assert stored.method_id == study.entrypoint_method_id
+    assert stored.method_id == selected.method_id
     assert stored.study_id == study.id
     assert stored.command[3].startswith("artifact:")
     assert stored.config_digest.startswith("sha256:")
@@ -87,17 +112,18 @@ def test_manifest_generation_without_automatic_result(research_tree, tmp_path, m
 
 
 def test_failed_run_is_preserved_and_identity_cannot_be_reused(research_tree, tmp_path, monkeypatch):
-    catalog, study, implementation, artifacts = prepared(
+    catalog, study, selected, implementation, artifacts = prepared(
         research_tree, tmp_path, monkeypatch, returncode=7
     )
     run = runner.execute(
         catalog,
         study.id,
-        study.profile_ids[0],
+        selected.profile_ids[0],
         implementation,
         artifacts,
         "github:test",
         32,
+        method_id=selected.method_id,
     )
     assert run.status == "failed"
     manifest = research_tree / "runs" / run.id / "manifest.yaml"
@@ -109,11 +135,12 @@ def test_failed_run_is_preserved_and_identity_cannot_be_reused(research_tree, tm
         runner.execute(
             catalog,
             study.id,
-            study.profile_ids[0],
+            selected.profile_ids[0],
             implementation,
             artifacts,
             "github:test",
             32,
+            method_id=selected.method_id,
         )
     assert manifest.read_bytes() == original
     duplicate = research_tree / "runs" / f"{run.id}.yaml"
@@ -130,23 +157,28 @@ def test_artifact_digest_changes_with_bytes(tmp_path):
 
 
 def test_dirty_implementation_is_rejected_before_run_creation(research_tree, tmp_path, monkeypatch):
-    catalog, study, implementation, artifacts = prepared(research_tree, tmp_path, monkeypatch)
+    catalog, study, selected, implementation, artifacts = prepared(
+        research_tree, tmp_path, monkeypatch
+    )
     monkeypatch.setattr(runner, "_git_identity", lambda path: (PINNED, path == implementation))
     with pytest.raises(ValueError, match="clean research and implementation"):
         runner.execute(
             catalog,
             study.id,
-            study.profile_ids[0],
+            selected.profile_ids[0],
             implementation,
             artifacts,
             "github:test",
             32,
+            method_id=selected.method_id,
         )
     assert list((research_tree / "runs").glob("DAWN-RUN-*")) == []
 
 
 def test_unpinned_implementation_commit_is_rejected(research_tree, tmp_path, monkeypatch):
-    catalog, study, implementation, artifacts = prepared(research_tree, tmp_path, monkeypatch)
+    catalog, study, selected, implementation, artifacts = prepared(
+        research_tree, tmp_path, monkeypatch
+    )
     monkeypatch.setattr(
         runner,
         "_git_identity",
@@ -156,17 +188,20 @@ def test_unpinned_implementation_commit_is_rejected(research_tree, tmp_path, mon
         runner.execute(
             catalog,
             study.id,
-            study.profile_ids[0],
+            selected.profile_ids[0],
             implementation,
             artifacts,
             "github:test",
             32,
+            method_id=selected.method_id,
         )
     assert list((research_tree / "runs").glob("DAWN-RUN-*")) == []
 
 
 def test_interrupted_run_preserves_terminal_manifest(research_tree, tmp_path, monkeypatch):
-    catalog, study, implementation, artifacts = prepared(research_tree, tmp_path, monkeypatch)
+    catalog, study, selected, implementation, artifacts = prepared(
+        research_tree, tmp_path, monkeypatch
+    )
 
     def interrupt(*args, **kwargs):
         raise KeyboardInterrupt
@@ -175,11 +210,12 @@ def test_interrupted_run_preserves_terminal_manifest(research_tree, tmp_path, mo
     run = runner.execute(
         catalog,
         study.id,
-        study.profile_ids[0],
+        selected.profile_ids[0],
         implementation,
         artifacts,
         "github:test",
         32,
+        method_id=selected.method_id,
     )
     assert run.status == "cancelled"
     manifest = research_tree / "runs" / run.id / "manifest.yaml"
@@ -187,15 +223,18 @@ def test_interrupted_run_preserves_terminal_manifest(research_tree, tmp_path, mo
 
 
 def test_run_method_must_belong_to_study(research_tree, tmp_path, monkeypatch):
-    catalog, study, implementation, artifacts = prepared(research_tree, tmp_path, monkeypatch)
+    catalog, study, selected, implementation, artifacts = prepared(
+        research_tree, tmp_path, monkeypatch
+    )
     run = runner.execute(
         catalog,
         study.id,
-        study.profile_ids[0],
+        selected.profile_ids[0],
         implementation,
         artifacts,
         "github:test",
         32,
+        method_id=selected.method_id,
     )
     manifest = research_tree / "runs" / run.id / "manifest.yaml"
     value = read_yaml(manifest)
@@ -205,3 +244,29 @@ def test_run_method_must_belong_to_study(research_tree, tmp_path, monkeypatch):
     write_yaml(manifest, value)
     errors = validate_catalog(load_catalog(research_tree))
     assert any("Method is not part of Study" in error for error in errors)
+
+
+def test_run_freezes_registered_environment_and_repository_revision(
+    research_tree, tmp_path, monkeypatch
+):
+    catalog, study, selected, implementation, artifacts = prepared(
+        research_tree, tmp_path, monkeypatch
+    )
+    run = runner.execute(
+        catalog,
+        study.id,
+        selected.profile_ids[0],
+        implementation,
+        artifacts,
+        "github:test",
+        32,
+        method_id=selected.method_id,
+    )
+    manifest = research_tree / "runs" / run.id / "manifest.yaml"
+    value = read_yaml(manifest)
+    value["environment_lock_digest"] = "sha256:" + "f" * 64
+    value["implementations"][0]["revision"] = "e" * 40
+    write_yaml(manifest, value)
+    errors = validate_catalog(load_catalog(research_tree))
+    assert any("frozen environment lock digest mismatch" in error for error in errors)
+    assert any("frozen provider revision differs" in error for error in errors)

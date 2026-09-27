@@ -29,6 +29,7 @@
       "type": "integer"
     },
     "source_statement": {
+      "minLength": 1,
       "title": "Source Statement",
       "type": "string"
     },
@@ -46,10 +47,12 @@
       "type": "string"
     },
     "title": {
+      "minLength": 1,
       "title": "Title",
       "type": "string"
     },
     "uri": {
+      "minLength": 1,
       "title": "Uri",
       "type": "string"
     }

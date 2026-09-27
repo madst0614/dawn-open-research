@@ -112,6 +112,9 @@ def _studies(catalog, query: str | None):
         if query and query.lower() not in text:
             continue
         state, blockers = readiness(catalog, item)
+        profile_ids = sorted(
+            {profile_id for plan in item.execution.plans for profile_id in plan.profile_ids}
+        )
         rows.append(
             {
                 "id": item.id,
@@ -121,7 +124,7 @@ def _studies(catalog, query: str | None):
                 "claims": item.claim_ids,
                 "methods": item.method_ids,
                 "readiness": state,
-                "profiles": [catalog.get(ref).name for ref in item.profile_ids],
+                "profiles": [catalog.get(ref).name for ref in profile_ids],
                 "blockers": blockers,
             }
         )
@@ -142,12 +145,14 @@ def build_parser():
             sub.add_argument("query", nargs="?")
     sub = commands.add_parser("resolve")
     sub.add_argument("id")
+    sub.add_argument("--method")
     sub.add_argument("--profile", required=True)
     sub.add_argument("--artifact", action="append", default=[], metavar="ID=PATH")
     sub.add_argument("--json", action="store_true")
     sub = commands.add_parser("view")
     sub.add_argument("id")
     sub.add_argument("--mode", choices=("compact", "research", "execution"), default="compact")
+    sub.add_argument("--method")
     sub.add_argument("--profile")
     sub.add_argument("--json", action="store_true")
     sub = commands.add_parser("export")
@@ -155,6 +160,7 @@ def build_parser():
     sub.add_argument("--json", action="store_true")
     sub = commands.add_parser("run")
     sub.add_argument("id")
+    sub.add_argument("--method")
     sub.add_argument("--profile", required=True)
     sub.add_argument("--implementation-repo", type=Path, required=True)
     sub.add_argument("--artifact", action="append", default=[], metavar="ID=PATH")
@@ -195,9 +201,18 @@ def main(argv=None) -> int:
         elif args.command == "studies":
             _emit(_studies(catalog, args.query), args.json)
         elif args.command == "resolve":
-            _emit(resolve(catalog, args.id, args.profile, _artifact_options(args.artifact)), args.json)
+            _emit(
+                resolve(
+                    catalog,
+                    args.id,
+                    args.profile,
+                    _artifact_options(args.artifact),
+                    method_id=args.method,
+                ),
+                args.json,
+            )
         elif args.command == "view":
-            _emit(build_view(catalog, args.id, args.mode, args.profile), args.json)
+            _emit(build_view(catalog, args.id, args.mode, args.profile, args.method), args.json)
         elif args.command == "export":
             _emit(build_export(catalog, args.id), args.json)
         elif args.command == "run":
@@ -211,6 +226,7 @@ def main(argv=None) -> int:
                 _artifact_options(args.artifact),
                 args.executor,
                 args.limit,
+                method_id=args.method,
             )
             _emit(
                 {

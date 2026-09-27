@@ -8,20 +8,14 @@ question_ids:
 - DAWN-Q-01M3E4R0714580E2PH6MQV64ZW
 claim_ids: []
 method_ids: []
+result_ids: []
+artifact_ids: []
 goal: Measure whether logical locality yields actual speed or memory savings without material quality loss.
 motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
-requires:
-  capabilities:
-  - execution.sparse_rw@1
-  - benchmark.step_time@1
-  artifacts: []
-profile_ids:
-- DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
-entrypoint: null
-expected_outputs: []
 completion_criteria: Specify a Method, obtain required capabilities and review observations.
 known_limitations:
 - No public research Result is established by this Study.
 blockers:
 - Sparse execution and matched quality/performance benchmark capabilities are missing.
-declared_readiness: null
+execution:
+  plans: []

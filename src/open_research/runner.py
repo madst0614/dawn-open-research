@@ -51,17 +51,18 @@ def execute(
     artifact_paths: dict[str, Path],
     executor: str,
     limit: int = 32,
+    method_id: str | None = None,
 ) -> Run:
     errors = validate_catalog(catalog)
     if errors:
         raise ValueError("cannot execute an invalid research tree: " + "; ".join(errors))
-    plan = resolve(catalog, study_id, profile, artifact_paths)
+    plan = resolve(catalog, study_id, profile, artifact_paths, method_id=method_id)
     if not plan["ready"]:
         raise ValueError("Run blocked: " + "; ".join(plan["blockers"]))
     study = catalog.get(study_id, Study)
-    if study.entrypoint != "dawn_srw.zero_shot_eval_jax@1":
-        raise ValueError(f"unsupported entrypoint: {study.entrypoint}")
-    if len(study.requires.artifacts) != 1:
+    if plan["entrypoint"] != "dawn_srw.zero_shot_eval_jax@1":
+        raise ValueError(f"unsupported entrypoint: {plan['entrypoint']}")
+    if len(plan["required_artifacts"]) != 1:
         raise ValueError("zero-shot adapter expects one checkpoint artifact")
     implementation_repo = implementation_repo.resolve()
     implementation_revision, implementation_dirty = _git_identity(implementation_repo)
@@ -89,7 +90,7 @@ def execute(
             }
         )
 
-    artifact_id = study.requires.artifacts[0]
+    artifact_id = plan["required_artifacts"][0]
     checkpoint = artifact_paths.get(artifact_id)
     if checkpoint is None:
         raise ValueError("local checkpoint path must be supplied")
@@ -101,7 +102,7 @@ def execute(
     (run_dir / "outputs").mkdir()
     config = {
         "study_id": study.id,
-        "method_id": study.entrypoint_method_id,
+        "method_id": plan["method_id"],
         "profile_id": plan["profile_id"],
         "artifact_id": artifact_id,
         "artifact_digest": artifact_digest,
@@ -129,7 +130,7 @@ def execute(
         created_by=executor,
         created_at=now,
         study_id=study.id,
-        method_id=study.entrypoint_method_id,
+        method_id=plan["method_id"],
         research_revision=research_revision,
         research_dirty=research_dirty,
         implementations=frozen_providers,
