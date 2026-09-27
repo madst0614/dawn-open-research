@@ -1,0 +1,8 @@
+id: DAWN-M-01M3HRPC1VHVZMPWE3V77FRR41
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Route-dimension and effective-geometry sweep
+description: Matched experiment testing quality and learned geometry across declared condition-coordinate dimensions.
+protocol: At a pinned implementation revision, preregister a route-dimension sweep including the reference width and smaller widths; hold model scale, operator-bank capacity, data, optimizer, token budget and evaluation protocol fixed where feasible; separate post-hoc dimensional analysis from retraining at reduced width; report task quality, training stability, activity and utilization, routing concentration and at least two effective or intrinsic dimension diagnostics, with a preregistered quality-equivalence margin and all failed runs preserved.
+status: proposed

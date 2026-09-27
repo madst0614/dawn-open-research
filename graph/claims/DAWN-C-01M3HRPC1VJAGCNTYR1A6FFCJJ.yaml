@@ -1,0 +1,9 @@
+id: DAWN-C-01M3HRPC1VJAGCNTYR1A6FFCJJ
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Computational address space
+statement: A computational address space is a compact coordinate domain whose declared lookup semantics maps model states to functionally relevant computation and may resolve logical cells to hardware without identifying semantic geometry with physical placement.
+claim_type: definition
+scope: Candidate conditional-computation systems with explicit coordinates, lookup semantics and a separately specified logical-to-physical mapping.
+status: proposed

@@ -1,0 +1,9 @@
+id: DAWN-C-01M3HRPC1V73QKTKS9PS73R8AQ
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Operator geometry may predict function
+statement: Within a grounded DAWN-SRW checkpoint, smaller distance in a declared condition or operator metric predicts greater functional similarity or lower substitution cost than null-matched operator pairs.
+claim_type: proposition
+scope: Specified checkpoints, operator types, input distributions, metrics and functional measurements; proximity is not assumed to be meaningful outside those conditions.
+status: proposed

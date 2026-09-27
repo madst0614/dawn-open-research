@@ -1,0 +1,8 @@
+id: DAWN-SRC-01M3HRPC1V199RR608ADWT6TH9
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Voronoi diagrams on the sphere
+source_type: paper
+uri: https://doi.org/10.1016/S0925-7721(02)00077-9
+source_statement: Na, Lee and Cheong give algorithmic constructions for Voronoi diagrams of compact sites on a sphere and related furthest-site diagrams.

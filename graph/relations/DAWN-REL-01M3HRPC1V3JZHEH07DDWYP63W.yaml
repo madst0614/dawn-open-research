@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HRPC1V3JZHEH07DDWYP63W
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+source_id: DAWN-C-01M3HRPC1V73QKTKS9PS73R8AQ
+target_id: DAWN-Q-01M3E4R071G8D3Q39AZQJN7TX4
+relation_class: semantic
+relation_type: answers
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T15:45:45+00:00'
+rationale: A reproducible geometry-function relationship is one bounded affirmative answer to whether conditional operators form meaningful logical neighborhoods.

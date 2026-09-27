@@ -1,0 +1,9 @@
+id: DAWN-C-01M3HRPC1VJ6S80NAVJG55W43H
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Semantic locality
+statement: Semantic locality is the empirical property that proximity in a declared computational coordinate system predicts a preregistered functional relation under independent controls; visual clustering or proximity by construction alone does not satisfy the definition.
+claim_type: definition
+scope: Analyses of learned condition or operator coordinates where the metric, functional relation, sampling protocol and null model are stated explicitly.
+status: proposed

@@ -172,7 +172,8 @@ def test_compact_study_view_answers_research_questions(research_tree, capsys):
     assert result["what_are_we_studying"] == study.goal
     assert result["why"] == study.motivation
     assert result["questions"] and result["methods"] and result["profiles"]
-    assert result["claims"] == [] and result["results"] == []
+    assert [item["id"] for item in result["claims"]] == study.claim_ids
+    assert result["results"] == []
     assert result["latest_run"] is None
     assert result["next"]["completion_criteria"] == study.completion_criteria
     assert "schema_version" not in result["focus"]

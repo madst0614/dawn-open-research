@@ -1,0 +1,12 @@
+id: DAWN-C-01M3HVE1Q1XS2ZQNF8F2270HKZ
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T16:33:40+00:00'
+title: Shared conditional routing can preserve language-model quality
+statement: State and operator-role representations can be co-embedded in a shared conditional space for routing without material loss of language-model quality.
+claim_type: proposition
+scope: >-
+  A future explicitly specified DAWN-SRW variant compared with a matched pinned reference
+  architecture under preregistered quality-equivalence criteria. This does not assert
+  semantic locality, interpretability, training efficiency or hardware benefit.
+status: proposed

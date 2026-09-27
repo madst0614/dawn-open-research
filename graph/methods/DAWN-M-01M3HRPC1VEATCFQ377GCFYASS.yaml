@@ -1,0 +1,8 @@
+id: DAWN-M-01M3HRPC1VEATCFQ377GCFYASS
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Implementation-grounded operator formulation audit
+description: Read-only audit that maps proposed condition, address and operator abstractions to a pinned DAWN-SRW implementation before empirical study.
+protocol: Pin the DAWN-SRW repository revision and record its dirty state; identify the reference model and configuration; map state, route query, route or operator address, read and write vectors, gates, thresholds, candidate visibility, composition and execution mode to exact symbols and shapes; determine whether coordinates are normalized and whether execution is dense or sparse; inventory checkpoint and trace artifacts without changing the implementation; classify each proposed abstraction as exact, approximate, obsolete or unimplemented and retain unresolved mismatches as blockers.
+status: proposed

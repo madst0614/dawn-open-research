@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HRPC1VKPJBSQNCJWRQQ7H6
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+source_id: DAWN-M-01M3HRPC1VC70KEFEXYHB5RWVP
+target_id: DAWN-C-01M3HRPC1V73QKTKS9PS73R8AQ
+relation_class: semantic
+relation_type: tests
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T15:45:45+00:00'
+rationale: Distance-stratified functional tests and controlled interventions test the proposed relationship between coordinate proximity and computation.

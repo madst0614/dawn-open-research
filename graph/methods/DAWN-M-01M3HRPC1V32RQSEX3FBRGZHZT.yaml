@@ -1,0 +1,8 @@
+id: DAWN-M-01M3HRPC1V32RQSEX3FBRGZHZT
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Static hierarchical computational-address simulation
+description: Offline comparison of exclusive ownership and exact or approximate lookup over grounded computational coordinates.
+protocol: Use a pinned learned coordinate snapshot, reserving synthetic sphere data for index sanity checks only; declare the metric and whether normalization preserves the model semantics; fit or fix hardware anchors and assign deterministic nearest-anchor ownership; compare flat exhaustive lookup, greedy hierarchy, bounded multi-probe and metric branch-and-bound under an explicitly chosen cell-routing or global-retrieval target; evaluate one-ball and multi-cap conservative covers separately from ownership; report unique assignment, occupancy, boundary margins, anchor comparisons, hardware probes, nearest-operator and top-k recall, false-positive and false-negative pruning, metadata size and task-quality effects where model execution is simulated.
+status: proposed

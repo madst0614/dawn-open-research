@@ -1,0 +1,8 @@
+id: DAWN-SRC-01M3HRPC1V21YV34KM50Q28S8S
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Faiss IndexIVF documentation
+source_type: documentation
+uri: https://faiss.ai/cpp_api/struct/structfaiss_1_1IndexIVF.html
+source_statement: The official Faiss API documents an inverted-file index in which a coarse quantizer assigns vectors to list identifiers and nprobe controls multi-list query search.

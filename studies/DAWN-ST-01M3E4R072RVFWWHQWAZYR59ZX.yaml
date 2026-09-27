@@ -2,24 +2,32 @@ id: DAWN-ST-01M3E4R072RVFWWHQWAZYR59ZX
 schema_version: 1
 created_by: github:madst0614
 created_at: '2026-09-26T05:59:34+00:00'
-title: Operator visibility requirement
-lifecycle: planned
+title: Conditional compactness and operator visibility
+lifecycle: blocked
 question_ids:
 - DAWN-Q-01M3E4R0711K5EGJS19FWGHC54
+- DAWN-Q-01M3HRPC1VFFY6M2B5WSR9X6RX
 claim_ids:
 - DAWN-C-01M3E4R071GJ56JWFJEXJVQ3F1
 - DAWN-C-01M3E4R071SDT4VJ3JGB6S8NE1
+- DAWN-C-01M3HRPC1VVQ4G3S82N0WE8FED
 method_ids:
 - DAWN-M-01M3E4R071TGX9GWPN7Z4ZQMB1
 - DAWN-M-01M3E4R071WX2RN3HQT6J7KE01
+- DAWN-M-01M3HRPC1VHVZMPWE3V77FRR41
 result_ids: []
-artifact_ids: []
-goal: Compare restricted versus broad operator visibility while separating post-hoc intervention from training under restriction.
-motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
-completion_criteria: Specify an executable Method, obtain required capabilities and review observations.
+artifact_ids:
+- DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
+goal: Determine how compact the condition coordinate and visible operator candidate set can be while preserving preregistered language-model quality and operator behavior.
+motivation: Route dimension, candidate visibility and final functional activity are distinct constraints on conditional computation. Matched experiments are required before compact geometry or sparse activity can be interpreted as evidence that broad access is unnecessary.
+completion_criteria: Complete matched route-dimension, post-hoc visibility and restricted-visibility training comparisons at pinned revisions; preregister quality-equivalence margins and candidate metrics; report task quality, training stability, effective dimension and operator behavior separately; preserve failures and distinguish reduced coordinate dimension from reduced candidate visibility.
 known_limitations:
 - No public research Result is established by this Study.
+- The registered reference checkpoint is unavailable and has no digest.
+- The current registered infrastructure does not expose matched route-dimension or visibility-training adapters.
 blockers:
+- No current TPU/TRC allocation is registered or verified.
+- The exact training data revision, route-dimension sweep and quality-equivalence margin are not fixed.
 - Visibility control and matched training/evaluation support are unverified.
 execution:
   plans:
@@ -27,23 +35,73 @@ execution:
     entrypoint: null
     requires:
       capabilities:
+      - model.dawn_srw@1
+      - checkpoint.load@1
       - analysis.operator_visibility@1
-      artifacts: []
+      - runtime.jax@1
+      - runtime.tpu@1
+      artifacts:
+      - DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
     profile_ids:
     - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
-    expected_outputs: []
+    expected_outputs:
+    - visibility_metrics.json
+    - evaluation_summary.json
+    - run_manifest.json
+    - logs
     blockers:
     - A post-hoc visibility execution adapter is not registered.
-    declared_readiness: draft
+    - The reference checkpoint is missing and has no digest.
+    - No current TPU/TRC allocation is registered or verified.
+    - The TPU environment has no exact lock digest.
+    declared_readiness: blocked
   - method_id: DAWN-M-01M3E4R071WX2RN3HQT6J7KE01
     entrypoint: null
     requires:
       capabilities:
-      - analysis.operator_visibility@1
+      - model.dawn_srw@1
+      - training.matched_visibility@1
+      - evaluation.zero_shot@1
+      - runtime.jax@1
+      - runtime.tpu@1
       artifacts: []
     profile_ids:
     - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
-    expected_outputs: []
+    expected_outputs:
+    - matched_training_configs
+    - checkpoints
+    - evaluation_tables
+    - operator_activity_traces
+    - run_manifest.json
+    - logs
     blockers:
     - Matched restricted-visibility training support is not registered.
-    declared_readiness: draft
+    - The training data revision and quality-equivalence margin are not fixed.
+    - No current TPU/TRC allocation is registered or verified.
+    - The TPU environment has no exact lock digest.
+    declared_readiness: blocked
+  - method_id: DAWN-M-01M3HRPC1VHVZMPWE3V77FRR41
+    entrypoint: null
+    requires:
+      capabilities:
+      - model.dawn_srw@1
+      - training.matched_route_dimension@1
+      - evaluation.zero_shot@1
+      - runtime.jax@1
+      - runtime.tpu@1
+      artifacts: []
+    profile_ids:
+    - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+    expected_outputs:
+    - matched_route_dimension_configs
+    - checkpoints
+    - quality_and_geometry_tables
+    - operator_activity_traces
+    - run_manifest.json
+    - logs
+    blockers:
+    - A matched route-dimension training adapter is not registered.
+    - The route-dimension sweep and quality-equivalence margin are not fixed.
+    - No current TPU/TRC allocation is registered or verified.
+    - The TPU environment has no exact lock digest.
+    declared_readiness: blocked

@@ -1,0 +1,9 @@
+id: DAWN-Q-01M3HRPC1V37M2G03ZE3EYGZ4G
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Causal controllability of operator geometry
+question: Does learned condition or operator geometry support reproducible causal manipulation, such that local suppression, restoration or substitution produces predictable functional changes?
+rationale: Stable or visually coherent neighborhoods do not by themselves provide a control representation; interventions are needed to distinguish causal organization from correlation or geometry imposed by an objective.
+scope: Grounded DAWN-SRW checkpoints and bounded tasks with preregistered intervention units, functional measurements and matched near, far and random controls.
+status: open

@@ -17,5 +17,6 @@ known_limitations:
 - No public research Result is established by this Study.
 blockers:
 - TPU-native sparse kernel, benchmark and correctness Method are missing.
+- No current TPU/TRC allocation is registered or verified.
 execution:
   plans: []

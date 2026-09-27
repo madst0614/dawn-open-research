@@ -1,0 +1,8 @@
+id: DAWN-SRC-01M3HRPC1V453F00SF97TJT3N7
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Spherical k-Means Clustering
+source_type: paper
+uri: https://doi.org/10.18637/jss.v050.i10
+source_statement: Hornik, Feinerer, Kober and Buchta formulate spherical k-means as prototype-based partitioning using cosine dissimilarity and present solver implementations and benchmark evaluation.

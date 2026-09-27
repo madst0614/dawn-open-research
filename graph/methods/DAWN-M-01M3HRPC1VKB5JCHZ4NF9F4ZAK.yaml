@@ -1,0 +1,8 @@
+id: DAWN-M-01M3HRPC1VKB5JCHZ4NF9F4ZAK
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Dynamic computational-index simulation
+description: Replay study of address-index correctness, selectivity and update cost as learned coordinates move during training.
+protocol: Capture coordinate snapshots at preregistered training intervals; build an exact reference index at the initial snapshot; replay identical snapshots under exact rebuild, fixed stale, conservative drift-expanded and local or lazy refresh policies, with address smoothing evaluated only as a separate intervention; compare every policy against exhaustive search and exact rebuild; report coordinate drift, false-positive and false-negative pruning, retrieval recall, refresh volume, cell reassignment and simulated operator migration, while keeping physical migration separate from metadata refresh.
+status: proposed

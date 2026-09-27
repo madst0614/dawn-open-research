@@ -1,0 +1,18 @@
+id: DAWN-Q-01M3HVE1BQD145N8HM1AEMNSFC
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T16:33:40+00:00'
+title: Shared conditional-space routing
+question: Can model state and operator roles be represented in a shared low-dimensional conditional space such that compatibility in that space routes computation while preserving language-model quality?
+rationale: >-
+  Current DAWN-SRW already uses state-conditioned operator selection. The proposed
+  architecture would make the relation between state and operator role explicit in a
+  common conditional coordinate, which may provide a cleaner routing object and later
+  make geometry easier to analyze. Whether it improves or even preserves computation is
+  unknown; it is an architectural alternative, not an established improvement.
+scope: >-
+  Matched DAWN-SRW architecture comparisons that co-represent model state and operator
+  computational role in an explicitly specified low-dimensional coordinate and evaluate
+  routing plus language-model quality. Semantic locality, interpretability and physical
+  hardware benefit are separate questions.
+status: open

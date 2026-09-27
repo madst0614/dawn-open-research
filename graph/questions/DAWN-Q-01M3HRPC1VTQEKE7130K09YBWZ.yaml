@@ -1,0 +1,9 @@
+id: DAWN-Q-01M3HRPC1VTQEKE7130K09YBWZ
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Hierarchical computational addressing
+question: Can learned conditional-operator geometry support non-overlapping logical hardware ownership and efficient flat or hierarchical lookup while preserving the declared operator-retrieval semantics?
+rationale: A geometric partition can assign owners without guaranteeing global nearest-operator retrieval, low fan-out or useful pruning; ownership correctness, search correctness and model quality therefore require separate evaluation.
+scope: Offline or simulated indexing over grounded DAWN-SRW coordinate snapshots, comparing flat ownership, hierarchical search, multi-probe retrieval and conservative bounds before any claim of physical speedup.
+status: open

@@ -1,0 +1,9 @@
+id: DAWN-Q-01M3HRPC1VFFY6M2B5WSR9X6RX
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Compact conditional computation
+question: Can DAWN-SRW preserve language-model quality while organizing state-conditioned computation through a condition coordinate substantially lower-dimensional than the model hidden state?
+rationale: A compact coordinate is central to the proposed control and hardware-address interpretation, but the current registered reference uses one fixed route width and does not establish how quality, effective dimensionality or operator behavior change as that width is reduced.
+scope: Matched DAWN-SRW configurations at pinned implementation revisions, with route dimension, effective dimension, training budget, data and evaluation protocol stated explicitly; no claim about all neural networks.
+status: open

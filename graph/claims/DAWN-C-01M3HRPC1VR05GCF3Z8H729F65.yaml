@@ -1,0 +1,9 @@
+id: DAWN-C-01M3HRPC1VR05GCF3Z8H729F65
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Conservative stale-bound safety
+statement: Under a genuine metric, expanding a previously valid region radius by a verified upper bound on coordinate drift preserves containment and therefore prevents false-negative lower-bound pruning until the next refresh.
+claim_type: proposition
+scope: Search regions whose original radius and subsequent per-member drift bound are both conservative under the same metric; efficiency and bound tightness are separate empirical questions.
+status: proposed

@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HVE33YEA2NG8TFFTFX64VA
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T16:33:40+00:00'
+source_id: DAWN-M-01M3E4R071DTMP5AR5S9G1NGR5
+target_id: DAWN-C-01M3HVE10DFH6G0YZFB7GNQRAV
+relation_class: semantic
+relation_type: tests
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T16:33:40+00:00'
+rationale: The deterministic generation protocol directly tests stability and prompt conditioning for the pinned checkpoint without presupposing support.

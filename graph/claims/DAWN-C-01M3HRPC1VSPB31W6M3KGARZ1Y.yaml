@@ -1,0 +1,9 @@
+id: DAWN-C-01M3HRPC1VSPB31W6M3KGARZ1Y
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Ownership and search bounds are distinct
+statement: Non-overlapping logical ownership should be specified independently of conservative overlapping search bounds, and assignment to one owner cell does not by itself guarantee global nearest-operator retrieval.
+claim_type: interpretation
+scope: Flat or hierarchical hardware indexing over normalized or otherwise metric computational coordinates.
+status: proposed

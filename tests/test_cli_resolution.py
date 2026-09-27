@@ -4,7 +4,7 @@ import pytest
 
 from open_research.cli import main
 from open_research.ids import new_id
-from open_research.models import InfrastructureProvider, Study
+from open_research.models import Claim, InfrastructureProvider, Question, Study
 from open_research.resolver import readiness, resolve
 from open_research.store import load_catalog, validate_catalog
 from conftest import read_yaml, write_yaml
@@ -30,10 +30,10 @@ def test_status_show_studies_and_resolve(research_tree, capsys):
 
     assert main(["--root", str(research_tree), "status", "--json"]) == 0
     status = json.loads(capsys.readouterr().out)
-    assert len(status["studies"]) == 7
+    assert len(status["studies"]) == len(catalog.of_type(Study))
     assert status["recent_runs"] == []
-    assert status["claims_by_status"] == {"proposed": 4}
-    assert len(status["open_questions"]) == 7
+    assert status["claims_by_status"] == {"proposed": len(catalog.of_type(Claim))}
+    assert len(status["open_questions"]) == len(catalog.of_type(Question))
     blocked = next(row for row in status["studies"] if row["id"] == study.id)
     assert blocked["readiness"] == "blocked"
     assert any("artifact" in item for item in blocked["blockers"])
@@ -239,7 +239,7 @@ def test_legacy_language_validation_is_one_multi_method_study(research_tree):
     assert len(study.method_ids) == 2
     assert {catalog.get(method_id).title for method_id in study.method_ids} == {
         "Frozen stock zero-shot evaluation",
-        "Autoregressive generation sampling",
+        "Autoregressive generation validation",
     }
     plans = {plan.method_id: plan for plan in study.execution.plans}
     assert set(plans) == set(study.method_ids)

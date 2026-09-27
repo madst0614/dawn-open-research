@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HRPC1VM9X7M3FGT8CVHNXA
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+source_id: DAWN-SRC-01M3HRPC1VXWJ3X1B6PFX0KKM8
+target_id: DAWN-Q-01M3HRPC1VTQEKE7130K09YBWZ
+relation_class: semantic
+relation_type: motivates
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T15:45:45+00:00'
+rationale: Cover-tree results motivate measuring whether intrinsic metric structure permits useful hierarchical nearest-neighbor pruning.

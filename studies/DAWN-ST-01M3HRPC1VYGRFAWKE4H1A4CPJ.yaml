@@ -1,0 +1,57 @@
+id: DAWN-ST-01M3HRPC1VYGRFAWKE4H1A4CPJ
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Dynamic computational-index maintenance
+lifecycle: blocked
+question_ids:
+- DAWN-Q-01M3HRPC1VBEP0P44NDJCPCKEX
+claim_ids:
+- DAWN-C-01M3HRPC1VJAGCNTYR1A6FFCJJ
+- DAWN-C-01M3HRPC1VR05GCF3Z8H729F65
+method_ids:
+- DAWN-M-01M3HRPC1VKB5JCHZ4NF9F4ZAK
+result_ids: []
+artifact_ids: []
+goal: Measure whether a computational-address index can remain correct and selective during training without per-step global rebuild or uncontrolled operator migration.
+motivation: Static addressability does not establish a trainable system. Coordinate drift, stale bounds, refresh traffic and cell reassignment must be measured on the same grounded training trajectory before physical placement is credible.
+completion_criteria: Register time-indexed coordinate snapshots from a pinned training Run; fix the metric and conservative drift statistic; compare exact rebuild, stale, drift-expanded and local or lazy refresh on the same snapshots; verify false-negative behavior against exhaustive search; report selectivity, recall, update volume, cell churn and simulated migration while separating metadata refresh from physical movement.
+known_limitations:
+- No training-time coordinate trajectory is currently grounded in this repository.
+- A safe radius expansion requires a genuine metric and a verified upper drift bound.
+- Physical migration and network scheduling remain simulated and cannot establish hardware efficiency.
+blockers:
+- No time-indexed coordinate Artifact or producing Run is registered.
+- A dynamic-index replay adapter is not registered.
+- The metric, drift bound, refresh policy and acceptable churn thresholds are not fixed.
+- No current TPU/TRC allocation is registered or verified for the required training trajectory.
+- The TPU environment has no exact lock digest.
+execution:
+  plans:
+  - method_id: DAWN-M-01M3HRPC1VKB5JCHZ4NF9F4ZAK
+    entrypoint: null
+    requires:
+      capabilities:
+      - model.dawn_srw@1
+      - training.coordinate_snapshots@1
+      - simulation.dynamic_index@1
+      - runtime.jax@1
+      - runtime.tpu@1
+      artifacts: []
+    profile_ids:
+    - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+    expected_outputs:
+    - time_indexed_coordinate_snapshots
+    - index_refresh_logs
+    - pruning_correctness_traces
+    - recall_and_selectivity_curves
+    - cell_reassignment_and_migration_report
+    - run_manifest.json
+    - logs
+    blockers:
+    - Coordinate-snapshot training and dynamic-index replay entrypoints are not registered.
+    - No producing training Run or time-indexed coordinate Artifact exists.
+    - The metric, drift bound and refresh thresholds are not fixed.
+    - No current TPU/TRC allocation is registered or verified.
+    - The registered environment has no exact lock digest.
+    declared_readiness: blocked

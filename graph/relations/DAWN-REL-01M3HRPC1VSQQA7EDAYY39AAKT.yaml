@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HRPC1VSQQA7EDAYY39AAKT
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+source_id: DAWN-Q-01M3HRPC1VTQEKE7130K09YBWZ
+target_id: DAWN-Q-01M3E4R0714580E2PH6MQV64ZW
+relation_class: semantic
+relation_type: refines
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T15:45:45+00:00'
+rationale: Address ownership and retrieval are narrower prerequisites for asking whether logical locality yields realized physical savings; the relation does not assert that simulation establishes speedup.

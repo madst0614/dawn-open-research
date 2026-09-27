@@ -9,4 +9,4 @@ relation_type: investigates
 status: proposed
 asserted_by: github:madst0614
 asserted_at: '2026-09-26T05:59:34+00:00'
-rationale: Fixed-prompt sampling would investigate the question's generation component.
+rationale: Deterministic fixed-prompt generation validation investigates the question's generation component without presupposing language quality.

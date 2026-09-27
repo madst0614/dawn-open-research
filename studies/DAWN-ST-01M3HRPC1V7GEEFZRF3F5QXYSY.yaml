@@ -1,0 +1,64 @@
+id: DAWN-ST-01M3HRPC1V7GEEFZRF3F5QXYSY
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Hierarchical computational-address simulation
+lifecycle: blocked
+question_ids:
+- DAWN-Q-01M3HRPC1VTQEKE7130K09YBWZ
+- DAWN-Q-01M3E4R071CQJ5ZB1XKVFQE9ZY
+- DAWN-Q-01M3E4R071G8D3Q39AZQJN7TX4
+claim_ids:
+- DAWN-C-01M3HRPC1VJ6S80NAVJG55W43H
+- DAWN-C-01M3HRPC1VJAGCNTYR1A6FFCJJ
+- DAWN-C-01M3HRPC1VSPB31W6M3KGARZ1Y
+method_ids:
+- DAWN-M-01M3HRPC1V32RQSEX3FBRGZHZT
+- DAWN-M-01M3HRPC1VK8RCV1DKJ6HVJQJN
+result_ids: []
+artifact_ids:
+- DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
+goal: Determine whether grounded DAWN-SRW coordinates can support exclusive logical ownership and useful flat or hierarchical lookup before attempting physical multi-device execution.
+motivation: Existing candidate-identification, logical-locality and physical-sparsity frontiers meet at the lookup layer, but a partition's existence does not establish semantic validity, retrieval correctness, low fan-out or hardware benefit.
+completion_criteria: Fix the model coordinate, metric and retrieval semantics; obtain a grounded coordinate snapshot; discharge ownership, tie and safe-pruning proof obligations or record counterexamples; compare flat, greedy, multi-probe and branch-and-bound lookup; report owner-hardware recall, global top-k recall, boundary behavior, metadata, comparisons and probe counts; keep task quality, index quality and any systems estimate separate.
+known_limitations:
+- Unit-sphere normalization and angular distance are candidates rather than established requirements.
+- Synthetic coordinates may test index mechanics but cannot establish learned neural locality.
+- This simulation cannot establish physical speedup, communication savings or load balance.
+- Query-traffic equalization, replication, fault tolerance and topology-aware scheduling are outside the initial scope.
+blockers:
+- No grounded condition or operator coordinate Artifact is registered.
+- Cell-defined routing versus global nearest-operator retrieval is not selected.
+- Target recall, hardware fan-out and quality-equivalence thresholds are not fixed.
+- A computational-index simulator and operator-coordinate extraction adapter are not registered.
+- No current TPU/TRC allocation or validated local simulation profile is registered.
+execution:
+  plans:
+  - method_id: DAWN-M-01M3HRPC1V32RQSEX3FBRGZHZT
+    entrypoint: null
+    requires:
+      capabilities:
+      - model.dawn_srw@1
+      - checkpoint.load@1
+      - analysis.operator_geometry@1
+      - simulation.computational_index@1
+      - runtime.jax@1
+      artifacts:
+      - DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
+    profile_ids:
+    - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+    expected_outputs:
+    - coordinate_snapshot
+    - flat_and_hierarchical_indexes
+    - ownership_and_boundary_statistics
+    - query_routing_traces
+    - recall_cost_and_metadata_report
+    - run_manifest.json
+    - logs
+    blockers:
+    - A computational-index simulation entrypoint is not registered.
+    - The reference checkpoint and coordinate snapshot are missing.
+    - Retrieval semantics and target recall are not fixed.
+    - No current TPU/TRC allocation or validated local simulation profile is registered.
+    - The registered environment has no exact lock digest.
+    declared_readiness: blocked

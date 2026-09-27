@@ -1,0 +1,22 @@
+id: DAWN-M-01M3HVE228VB51E2E8HC2ZME7P
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T16:33:40+00:00'
+title: Matched shared conditional-space routing comparison
+description: Matched reference-versus-candidate architecture study of routing through a shared low-dimensional state/operator-role coordinate.
+protocol: >-
+  First audit the pinned reference routing and read implementation. Before training,
+  specify the shared conditional representation, the state encoder, the operator-role
+  encoder, whether projection parameters themselves are shared or only the resulting
+  coordinate system is shared, the compatibility function and the conditional dimension.
+  Implement and pass a small-scale shape, numerical and routing sanity version before any
+  matched training. Compare the candidate with the pinned reference architecture while
+  holding data revision and ordering, optimizer and schedule, token budget, model scale
+  and evaluation protocol as closely matched as possible; explicitly inventory unavoidable
+  parameter-count, active-parameter and FLOP differences rather than describing them as
+  matched. Evaluate validation loss, frozen stock zero-shot behavior, the autoregressive
+  generation qualification protocol, training stability, routing utilization and
+  concentration, and declared conditional-coordinate diagnostics. Preregister quality
+  equivalence margins, seeds and comparison rules, preserve failed runs, and do not infer
+  semantic locality or interpretability merely from geometric structure.
+status: proposed

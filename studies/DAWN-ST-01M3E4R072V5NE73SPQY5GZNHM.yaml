@@ -6,19 +6,25 @@ title: Reference checkpoint language validation
 lifecycle: blocked
 question_ids:
 - DAWN-Q-01M3E4R071NBX7X2KYEJ9CTKHC
-claim_ids: []
+claim_ids:
+- DAWN-C-01M3HVE10DFH6G0YZFB7GNQRAV
 method_ids:
 - DAWN-M-01M3E4R07153DBQB3GE6HYWGQK
 - DAWN-M-01M3E4R071DTMP5AR5S9G1NGR5
 result_ids: []
 artifact_ids:
 - DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
-goal: Characterize the reference checkpoint with frozen stock zero-shot evaluation and fixed-prompt autoregressive generation as distinct Methods.
-motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
-completion_criteria: Complete and review both Method protocols with traceable grounding, then author Results explicitly before updating any Claim or resolving the Question.
+goal: Qualify the pinned reference checkpoint with frozen stock zero-shot evaluation and deterministic fixed-prompt autoregressive generation as distinct Methods.
+motivation: This P0 qualification gate precedes new architecture and locality work. Zero-shot evaluation checks reference integrity and basic language behavior, while generation is the first execution priority once compute and reproducibility blockers are resolved. No Result is asserted.
+completion_criteria: Restore and verify the exact checkpoint, tokenizer and configuration; complete the zero-shot sanity evaluation; execute the fixed generation protocol with repeatable finite outputs and preserved manifests; obtain explicit sample review; then author grounded Results separately before changing Claim or Question status.
 known_limitations:
 - No public research Result is established by this Study.
-blockers: []
+- Passing this qualification would characterize only the pinned checkpoint and protocol, not the DAWN-SRW model family in general.
+blockers:
+- The reference checkpoint location and digest are unresolved.
+- The exact tokenizer identity and reproducible runtime/environment lock are unresolved.
+- The generation entrypoint is not registered in DOR.
+- No current TPU/TRC allocation is registered or verified.
 execution:
   plans:
   - method_id: DAWN-M-01M3E4R07153DBQB3GE6HYWGQK
@@ -36,11 +42,13 @@ execution:
     - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
     expected_outputs:
     - results_summary.json
+    - checkpoint_tokenizer_integrity.json
     - run_manifest.json
     - logs
     blockers:
     - Checkpoint has not been located locally or given a public digest.
     - TPU software environment has no exact lock digest.
+    - No current TPU/TRC allocation is registered or verified.
     declared_readiness: blocked
   - method_id: DAWN-M-01M3E4R071DTMP5AR5S9G1NGR5
     entrypoint: null
@@ -57,11 +65,16 @@ execution:
     - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
     expected_outputs:
     - generated_samples.jsonl
+    - prompt_suite_manifest.json
+    - checkpoint_tokenizer_integrity.json
+    - generation_review.json
     - run_manifest.json
     - logs
     blockers:
-    - Fixed prompts and decoding settings are not specified.
+    - The versioned prompt suite manifest with exact prompt text and order is not registered.
     - A generation execution adapter is not registered.
     - Checkpoint has not been located locally or given a public digest.
+    - Exact tokenizer identity and digests are unresolved.
     - TPU software environment has no exact lock digest.
+    - No current TPU/TRC allocation is registered or verified.
     declared_readiness: blocked

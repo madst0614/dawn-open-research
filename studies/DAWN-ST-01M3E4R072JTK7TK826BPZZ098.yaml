@@ -2,20 +2,76 @@ id: DAWN-ST-01M3E4R072JTK7TK826BPZZ098
 schema_version: 1
 created_by: github:madst0614
 created_at: '2026-09-26T05:59:34+00:00'
-title: Logical locality
-lifecycle: planned
+title: Computational geometry and semantic locality
+lifecycle: blocked
 question_ids:
 - DAWN-Q-01M3E4R071G8D3Q39AZQJN7TX4
-claim_ids: []
-method_ids: []
+- DAWN-Q-01M3HRPC1V37M2G03ZE3EYGZ4G
+claim_ids:
+- DAWN-C-01M3HRPC1V73QKTKS9PS73R8AQ
+- DAWN-C-01M3HRPC1VJ6S80NAVJG55W43H
+method_ids:
+- DAWN-M-01M3HRPC1VEATCFQ377GCFYASS
+- DAWN-M-01M3HRPC1VC70KEFEXYHB5RWVP
 result_ids: []
-artifact_ids: []
-goal: Study whether conditional operator organization forms stable logical neighborhoods.
-motivation: Owner-directed initial DAWN research frontier; no Result is asserted.
-completion_criteria: Specify a Method, obtain required capabilities and review observations.
+artifact_ids:
+- DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
+goal: Ground the implemented DAWN-SRW condition and operator coordinates, then test whether their geometry predicts functional relations and supports controlled causal intervention.
+motivation: Stable or clustered coordinates are not sufficient evidence of meaningful organization. Function-first measurements, independent nulls and intervention are required to distinguish semantic locality from architecture- or objective-induced appearance.
+completion_criteria: Audit the pinned implementation and expose exact coordinate and operator objects; preregister at least one functional metric independently of geometry; compare distance-stratified pairs against permutation and activation-matched nulls; complete suppression, restoration and near-versus-far substitution controls on grounded checkpoints; report task quality, geometry and causal effects separately and preserve negative outcomes.
 known_limitations:
 - No public research Result is established by this Study.
+- The registered provider identifies v4172, while later operation-space implementations are not registered as executable infrastructure here.
+- A visually coherent or auxiliary-loss-induced cluster does not satisfy the proposed semantic-locality definition.
 blockers:
-- Claims, Results and a concrete Method are needed before execution.
+- The registered checkpoint is missing and has no digest.
+- Coordinate extraction, functional-locality and intervention adapters are not registered.
+- Functional-distance measures, sampling rules and success thresholds are not fixed.
+- No current TPU/TRC allocation is registered or verified.
 execution:
-  plans: []
+  plans:
+  - method_id: DAWN-M-01M3HRPC1VEATCFQ377GCFYASS
+    entrypoint: null
+    requires:
+      capabilities:
+      - model.dawn_srw@1
+      artifacts: []
+    profile_ids:
+    - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+    expected_outputs:
+    - implementation_map
+    - symbol_and_shape_table
+    - checkpoint_and_trace_inventory
+    - blocker_report
+    blockers:
+    - A repository-audit execution adapter is not registered.
+    - The audit output has not been authored as a reviewable Artifact.
+    declared_readiness: blocked
+  - method_id: DAWN-M-01M3HRPC1VC70KEFEXYHB5RWVP
+    entrypoint: null
+    requires:
+      capabilities:
+      - model.dawn_srw@1
+      - checkpoint.load@1
+      - analysis.operator_geometry@1
+      - analysis.operator_intervention@1
+      - runtime.jax@1
+      - runtime.tpu@1
+      artifacts:
+      - DAWN-ART-01M31BQ4QWMQ1DVQHK443VYJ1Y
+    profile_ids:
+    - DAWN-PROFILE-01M31BQ4QWP1DKY9E7SSEZY85N
+    expected_outputs:
+    - coordinate_and_context_dataset
+    - functional_locality_report
+    - intervention_report
+    - null_comparisons
+    - run_manifest.json
+    - logs
+    blockers:
+    - Operator-geometry and intervention adapters are not registered.
+    - The reference checkpoint is missing and has no digest.
+    - Functional metrics, null sampling and causal success thresholds are not fixed.
+    - No current TPU/TRC allocation is registered or verified.
+    - The TPU environment has no exact lock digest.
+    declared_readiness: blocked

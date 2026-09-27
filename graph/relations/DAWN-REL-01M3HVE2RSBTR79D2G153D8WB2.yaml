@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HVE2RSBTR79D2G153D8WB2
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T16:33:40+00:00'
+source_id: DAWN-C-01M3HVE10DFH6G0YZFB7GNQRAV
+target_id: DAWN-Q-01M3E4R071NBX7X2KYEJ9CTKHC
+relation_class: semantic
+relation_type: answers
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T16:33:40+00:00'
+rationale: The proposed Claim is a bounded candidate answer to the generation component of the reference-checkpoint language question; it remains unsupported pending execution and review.

@@ -1,0 +1,9 @@
+id: DAWN-Q-01M3HRPC1VBEP0P44NDJCPCKEX
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Dynamic computational index maintenance
+question: Can computational-address metadata remain correct and selective at acceptable refresh and migration cost while learned condition or operator coordinates move during training?
+rationale: An inference-time index is not a viable training architecture if maintaining it requires per-step global rebuilds, unsafe stale pruning or excessive logical and physical reassignment.
+scope: Time-indexed coordinate snapshots from specified DAWN-SRW training runs, evaluated with exact rebuild, stale, conservative-expansion and local or lazy refresh policies; physical migration remains simulated initially.
+status: open

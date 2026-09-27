@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HRPC1VVS1YJER9DZAXTZH6
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+source_id: DAWN-Q-01M3HRPC1V37M2G03ZE3EYGZ4G
+target_id: DAWN-Q-01M3E4R071G8D3Q39AZQJN7TX4
+relation_class: semantic
+relation_type: refines
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T15:45:45+00:00'
+rationale: The causal-controllability question isolates the stronger intervention requirement within the broader logical-locality question.

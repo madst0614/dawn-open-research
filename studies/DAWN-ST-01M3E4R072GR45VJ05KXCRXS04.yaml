@@ -17,5 +17,6 @@ known_limitations:
 - No public research Result is established by this Study.
 blockers:
 - Sparse execution and matched quality/performance benchmark capabilities are missing.
+- No current TPU/TRC allocation is registered or verified for physical benchmarking.
 execution:
   plans: []

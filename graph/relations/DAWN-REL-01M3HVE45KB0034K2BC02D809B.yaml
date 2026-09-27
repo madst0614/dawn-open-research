@@ -1,0 +1,12 @@
+id: DAWN-REL-01M3HVE45KB0034K2BC02D809B
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T16:33:40+00:00'
+source_id: DAWN-M-01M3HVE228VB51E2E8HC2ZME7P
+target_id: DAWN-C-01M3HVE1Q1XS2ZQNF8F2270HKZ
+relation_class: semantic
+relation_type: tests
+status: proposed
+asserted_by: github:madst0614
+asserted_at: '2026-09-27T16:33:40+00:00'
+rationale: The matched protocol directly tests the proposed quality-preservation claim while requiring explicit accounting for unmatched parameters and compute.

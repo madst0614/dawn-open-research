@@ -1,0 +1,9 @@
+id: DAWN-C-01M3HRPC1VVQ4G3S82N0WE8FED
+schema_version: 1
+created_by: github:madst0614
+created_at: '2026-09-27T15:45:45+00:00'
+title: Compact condition coordinates may suffice
+statement: DAWN-SRW can preserve a preregistered language-model quality margin while using a condition coordinate substantially lower-dimensional than its hidden state.
+claim_type: proposition
+scope: Matched DAWN-SRW route-dimension experiments at specified model scales, data, training budgets and evaluation protocols.
+status: proposed
